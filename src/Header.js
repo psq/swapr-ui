@@ -5,10 +5,6 @@ import { AppContext } from './AppContext'
 import { /*Link,*/ useConnect } from '@blockstack/connect'
 import { Link } from 'react-router-dom'
 
-// interface HeaderProps {
-//   signOut: () => void
-// }
-
 export const Header = ({ signOut }) => {
   const state = useContext(AppContext)
   const { doOpenAuth } = useConnect()

@@ -5,7 +5,6 @@ import {
   AddressVersion,
   AddressHashMode,
 } from '@blockstack/stacks-transactions'
-// import { STX_JSON_PATH } from './UserSession'
 
 // export const SIDECAR_URL = 'https://sidecar.staging.blockstack.xyz'
 export const SIDECAR_URL = 'http://localhost:3999'
@@ -24,19 +23,6 @@ export function getStacksAccount(appPrivateKey) {
   )
   return { privateKey, address }
 }
-
-// export async function getUserAddress(userSession, username) {
-//   try {
-//     const result = await userSession.getFile(STX_JSON_PATH, {
-//       decrypt: false,
-//       username: username,
-//     })
-//     return await JSON.parse(result)
-//   } catch (e) {
-//     console.log(e)
-//     return null
-//   }
-// }
 
 export async function fetchAccount(address) {
   console.log('Checking account')

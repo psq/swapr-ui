@@ -1,5 +1,4 @@
 import React, { Component } from 'react'
-// import BlockstackContext from 'react-blockstack/dist/context'
 import { addressToString } from '@blockstack/stacks-transactions'
 import { AppContext } from './AppContext'
 
@@ -9,8 +8,6 @@ import {
   STACKS_API_FAUCET,
   fetchAccount,
 } from './StacksAccount'
-
-// Demonstrating BlockstackContext for legacy React Class Components.
 
 export default class Profile extends Component {
   static contextType = AppContext
@@ -34,8 +31,6 @@ export default class Profile extends Component {
 
   async onContextChanged() {
     const { userData } = this.context
-    console.log("userData++", userData)
-    // const { userData } = this.props
 
     const { address } = getStacksAccount(userData.appPrivateKey)
     const addressAsString = addressToString(address)

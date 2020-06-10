@@ -1,5 +1,4 @@
 import React from 'react'
-// import NoteField from './NoteField'
 
 export default function Main(props) {
   // const { userData } = props
@@ -7,7 +6,6 @@ export default function Main(props) {
     <main className="panel-welcome mt-5 container">
       <div className="lead row mt-5">
         <div className="mx-auto col col-sm-10 col-md-8 px-4">
-          { /*<NoteField title="Note" path="note" placeholder="to yourself..." /> */}
         </div>
 
         <div className="card col-xs-10 col-md-8 mx-auto mt-5 text-center px-0 border-warning">

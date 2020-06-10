@@ -1,5 +1,4 @@
 import React, { useEffect, useContext } from 'react'
-// import { useBlockstack } from 'react-blockstack'
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
 
 import { UserSession, AppConfig } from 'blockstack'
@@ -16,7 +15,6 @@ import { getAuthOrigin } from './utils'
 
 
 export default function App(props) {
-  // const { person, authenticated } = useBlockstack()
   const [state, setState] = React.useState(defaultState)
   const [authResponse, setAuthResponse] = React.useState('')
   const [appPrivateKey, setAppPrivateKey] = React.useState('')
