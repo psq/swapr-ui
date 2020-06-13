@@ -1,5 +1,6 @@
 import React, { useEffect, useContext, Suspense } from 'react'
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
+import { useDispatch } from 'react-redux'
 
 import { UserSession, AppConfig } from 'blockstack'
 import { Connect, AuthOptions } from '@blockstack/connect'
@@ -40,6 +41,7 @@ console.log("appConfig", appConfig)
 
 export default function App(props) {
   const [state, setState] = React.useState(defaultState)
+  const dispatch = useDispatch()
   // const [authResponse, setAuthResponse] = React.useState('')
   // const [appPrivateKey, setAppPrivateKey] = React.useState('')
 
@@ -48,6 +50,7 @@ export default function App(props) {
   const signOut = () => {
     userSession.signUserOut()
     setState({ userData: null, show_landing: true, })
+    dispatch({type: 'set_stx', stx_balance: null})
   }
 
   useEffect(() => {
