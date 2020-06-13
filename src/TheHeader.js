@@ -1,0 +1,47 @@
+import React, { useContext } from 'react'
+// import { useSelector, useDispatch } from 'react-redux'
+import {
+  CHeader,
+  CHeaderNav,
+  CButton,
+} from '@coreui/react'
+// import CIcon from '@coreui/icons-react'
+
+import { useConnect } from '@blockstack/connect'
+
+import { AppContext } from './AppContext'
+
+const TheHeader = ({ signOut }) => {
+  // const dispatch = useDispatch()
+  // const sidebar_show = useSelector(state => state.sidebar.sidebar_show)
+  const context = useContext(AppContext)
+  const { doOpenAuth } = useConnect()
+
+  // const toggleSidebar = () => {
+  //   const val = [true, 'responsive'].includes(sidebar_show) ? false : 'responsive'
+  //   dispatch({type: 'set_sidebar', sidebar_show: val})
+  // }
+
+  // const toggleSidebarMobile = () => {
+  //   const val = [false, 'responsive'].includes(sidebar_show) ? true : 'responsive'
+  //   dispatch({type: 'set_sidebar', sidebar_show: val})
+  // }
+
+  return (
+    <CHeader>
+      {context.userData ? (
+        <CHeaderNav className="px-0 col-4 offset-md-8" >
+          <div className="col-9 text-right">{context.userData.username || 'swapr user'}</div>
+          <CButton color="link" className="my-2 my-sm-2" type="submit" onClick={() => {signOut()}} >Sign off</CButton>
+        </CHeaderNav>
+      ) : (
+        <CHeaderNav className="px-0 col-2 offset-md-10" >
+          <CButton color="primary" className="my-2 my-sm-2" type="submit" onClick={() => {doOpenAuth(false, {authOrigin: 'http://localhost:5555'}) }} >Register</CButton>
+          <CButton color="link" className="my-2 my-sm-2" type="submit" onClick={() => {doOpenAuth(true, {authOrigin: 'http://localhost:5555'}) }}>Sign in</CButton>
+        </CHeaderNav>
+      )}
+    </CHeader>
+  )
+}
+
+export default TheHeader

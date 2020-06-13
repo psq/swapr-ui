@@ -1,65 +1,107 @@
-import React, { useEffect, useContext } from 'react'
+import React, { useEffect, useContext, Suspense } from 'react'
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
 
 import { UserSession, AppConfig } from 'blockstack'
 import { Connect, AuthOptions } from '@blockstack/connect'
+import { addressToString } from '@blockstack/stacks-transactions'
+
+import { CContainer, CFade } from '@coreui/react'
+
+import './scss/style.scss'
+
+import {
+  getStacksAccount,
+  fetchAccount,
+} from './StacksAccount'
+
+import TheHeader from './TheHeader'
+import TheFooter from './TheFooter'
+import TheSidebar from './TheSidebar'
 
 import { defaultState, AppContext } from './AppContext'
-import Exchange from './Exchange'
-import { Header } from "./Header"
 import Landing from './Landing'
-import Main from './Main'
-import Pool from './Pool'
-import Profile from './Profile'
+// import Exchange from './Exchange'
+// import Main from './Main'
+// import Pool from './Pool'
+// import Profile from './Profile'
 import { getAuthOrigin } from './utils'
 
+import routes from './routes'
+
+const loading = (
+  <div className="pt-3 text-center">
+    <div className="sk-spinner sk-spinner-pulse"></div>
+  </div>
+)
+
+const appConfig = new AppConfig(['store_write'], document.location.href, '', '/manifest.json', 'https://test-registrar.blockstack.org')
+const userSession = new UserSession({ appConfig })
+console.log("appConfig", appConfig)
 
 export default function App(props) {
   const [state, setState] = React.useState(defaultState)
-  const [authResponse, setAuthResponse] = React.useState('')
-  const [appPrivateKey, setAppPrivateKey] = React.useState('')
-
-  const appConfig = new AppConfig(['store_write'], document.location.href, '', '/manifest.json', 'https://test-registrar.blockstack.org')
-  console.log("appConfig", appConfig)
-  const userSession = new UserSession({ appConfig })
+  // const [authResponse, setAuthResponse] = React.useState('')
+  // const [appPrivateKey, setAppPrivateKey] = React.useState('')
 
   const authOrigin = getAuthOrigin()
 
   const signOut = () => {
     userSession.signUserOut()
-    setState({ userData: null })
+    setState({ userData: null, show_landing: true, })
   }
 
   useEffect(() => {
     if (userSession.isUserSignedIn()) {
       const userData = userSession.loadUserData()
-      setState({ userData })
+      setState(state => ({ ...state, userData }))
+    } else {
+      setState(state => ({ ...state, show_landing: true }))
     }
   }, [])
 
-  const AppContent = () => {
-    const state = useContext(AppContext)
+  const TheContent = () => {
+    const context = useContext(AppContext)
+
     return (
-      <div>
-        {!state.userData && <Landing/>}
-        {state.userData &&
-          <div>
-            <Switch>
-              <Route path="/pool">
-                <Pool />
-              </Route>
-              <Route path="/exchange">
-                <Exchange />
-              </Route>
-              <Route path="/profile">
-                <Profile />
-              </Route>
-              <Route path="/">
-                <Main />
-              </Route>
-            </Switch>
+      <main className="c-main">
+        <CContainer fluid>
+          <Suspense fallback={loading}>
+            {context.show_landing && <Landing/>}
+            {context.userData &&
+              <Switch>
+                {routes.map((route, idx) => {
+                  return route.component && (
+                    <Route
+                      key={idx}
+                      path={route.path}
+                      exact={route.exact}
+                      name={route.name}
+                      render={props => (
+                        <CFade>
+                          <route.component {...props} />
+                        </CFade>
+                      )} />
+                  )
+                })}
+              </Switch>
+            }
+          </Suspense>
+        </CContainer>
+      </main>
+    )
+  }
+
+  const Layout = () => {
+    return (
+      <div className="c-app c-default-layout">
+        <TheSidebar/>
+        <div className="c-wrapper">
+          <TheHeader signOut={signOut}/>
+          <div className="c-body">
+            <TheContent/>
           </div>
-        }
+          <TheFooter/>
+        </div>
       </div>
     )
   }
@@ -68,35 +110,35 @@ export default function App(props) {
     manifestPath: '/manifest.json',
     redirectTo: '/',
     userSession,
-    finished: ({ userSession, authResponse }) => {
+    finished: async ({ userSession, authResponse }) => {
+      // TODO(psq): this gets called 3 times
       const userData = userSession.loadUserData()
-      console.log("userData", userData)
-      setAppPrivateKey(userData.appPrivateKey)
-      setAuthResponse(authResponse)
-      setState({ userData })
+      console.log("finished.userData", userData)
+      // setAppPrivateKey(userData.appPrivateKey)
+      // setAuthResponse(authResponse)
+      const { address } = getStacksAccount(userData.appPrivateKey)
+      const stx_balance = await fetchAccount(addressToString(address))
+      setState({ userData, stx_balance })
     },
     authOrigin,
     appDetails: {
       name: 'swapr',
-      icon: `${document.location.origin}/swapr.png`,
+      icon: `${document.location.origin}/swapr-square.png`,
     },
   }
 
-  const { userData } = state
-
-  console.log("userData", userData)
-
+  // const { userData } = state
+  // console.log("userData", userData)
+  // console.log("app.state", state)
   return (
     <div className="App">
       <Connect authOptions={authOptions}>
         <AppContext.Provider value={state}>
 
           <Router>
-            {authResponse && <input type="hidden" id="auth-response" value={authResponse} />}
-            {appPrivateKey && <input type="hidden" id="app-private-key" value={appPrivateKey} />}
-
-            <Header signOut={signOut}/>
-            <AppContent />
+            {/*authResponse && <input type="hidden" id="auth-response" value={authResponse} />*/}
+            {/*appPrivateKey && <input type="hidden" id="app-private-key" value={appPrivateKey} />*/}
+            <Layout />
           </Router>
         </AppContext.Provider>
       </Connect>

@@ -26,3 +26,7 @@ export const getRPCClient = () => {
     : 'https://sidecar.staging.blockstack.xyz';
   return new RPCClient(url);
 }
+
+export function numberWithCommas(x) {
+    return x.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}

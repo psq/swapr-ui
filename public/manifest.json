@@ -3,7 +3,7 @@
   "description": "Trustless token exchange on Blockstack",
   "icons": [
     {
-    "src": "swapr.png",
+    "src": "swapr-square.png",
     "sizes": "520x200",
     "type": "image/png"
     }

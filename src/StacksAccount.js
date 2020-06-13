@@ -25,9 +25,22 @@ export function getStacksAccount(appPrivateKey) {
 }
 
 export async function fetchAccount(address) {
-  console.log('Checking account')
+  // console.log('Checking account')
   const balanceUrl = `${STACKS_API_ACCOUNTS_URL}/${address}`
   const result = await fetch(balanceUrl)
-  console.log(result)
-  return await result.json()
+  // console.log(result)
+  const json = await result.json()
+  // console.log("fetchAccount.result", json)
+  const balance = parseInt(json.balance, 16)
+  return balance
+}
+
+export async function getSTX(address) {
+    const result = await fetch(
+    `${STACKS_API_FAUCET}?address=${address}`,
+    {
+      method: 'POST',
+    }
+  )
+  return result
 }

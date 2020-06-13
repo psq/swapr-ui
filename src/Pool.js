@@ -1,15 +1,13 @@
-import React, { useContext } from 'react'
+import React, { /* useContext */ } from 'react'
 
-import { AppContext } from './AppContext'
+// import { AppContext } from './AppContext'
 
-export default function Landing (props) {
-  const state = useContext(AppContext)
+export default function Pool (props) {
+  // const context = useContext(AppContext)
 
-  console.log("state", state)
-  console.log("userData", state.userData)
   return (
     <div className="Pool">
-      Pool
+      <h1>Pool</h1>
     </div>
   )
 }
