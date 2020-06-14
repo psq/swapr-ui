@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react'
+import React, { useContext } from 'react'
 import { addressToString } from '@blockstack/stacks-transactions'
 import { useSelector, useDispatch } from 'react-redux'
 
@@ -14,8 +14,8 @@ import {
 // import CIcon from '@coreui/icons-react'
 
 import {
-  fetchAccount,
   getStacksAccount,
+  useUpdateSTX,
 } from './StacksAccount'
 
 import {
@@ -26,23 +26,15 @@ import { AppContext } from './AppContext'
 
 export default function Main(props) {
   const context = useContext(AppContext)
-  // console.log("dashboard.context", context)
   const { address } = getStacksAccount(context.userData.appPrivateKey)
-
   const dispatch = useDispatch()
   const stx_balance = useSelector(state => state.stx.stx_balance)
-  // console.log("dashboard.stx_balance", stx_balance)
 
-  useEffect(() => {
-    // console.log("useEffect start")
-    const id = setInterval(async () => {
-      // console.log("refresh STX Dash", addressToString(address))
-      const stx_balance = await fetchAccount(addressToString(address))
-      console.log("stx_balance", stx_balance)
-      dispatch({type: 'set_stx', stx_balance})
-    }, 2500)
-    return () => {/*console.log("useEffect end");*/ clearInterval(id)}
-  }, [address, dispatch])
+  const sender = {
+    stacksAddress: addressToString(address),
+    secretKey: context.userData.appPrivateKey,
+  }
+  useUpdateSTX(sender, dispatch, stx_balance)
 
   return (
     <div>

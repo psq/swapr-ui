@@ -76,7 +76,6 @@ export default function Faucet (props) {
 
   return (
     <div className="Faucets">
-      <h1>Faucets</h1>
       <CContainer>
         <CRow>
           <CCol lg="3" className="py-3 row align-items-center">
