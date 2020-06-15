@@ -1,5 +1,5 @@
 import React, { useContext } from 'react'
-import { addressToString } from '@blockstack/stacks-transactions'
+// import { addressToString } from '@blockstack/stacks-transactions'
 import { useSelector, useDispatch } from 'react-redux'
 
 import {
@@ -14,7 +14,7 @@ import {
 // import CIcon from '@coreui/icons-react'
 
 import {
-  getStacksAccount,
+  // getStacksAccount,
   useUpdateSTX,
   useUpdateWRAPR,
 } from './StacksAccount'
@@ -27,14 +27,14 @@ import { AppContext } from './AppContext'
 
 export default function Main(props) {
   const context = useContext(AppContext)
-  const { address } = getStacksAccount(context.userData.appPrivateKey)
+  const address = context.userData.profile.stxAddress
+
   const dispatch = useDispatch()
   const stx_balance = useSelector(state => state.stx.stx_balance)
   const wrapr_balance = useSelector(state => state.wrapr.wrapr_balance)
 
   const sender = {
-    stacksAddress: addressToString(address),
-    secretKey: context.userData.appPrivateKey,
+    stacksAddress: address,
   }
   useUpdateSTX(sender, dispatch, stx_balance)
   useUpdateWRAPR(sender, dispatch, wrapr_balance)
@@ -48,7 +48,7 @@ export default function Main(props) {
               Wallet
             </CCardHeader>
             <CCardBody>
-              Your address is {addressToString(address)}
+              Your address is {address}
             </CCardBody>
           </CCard>
         </CCol>

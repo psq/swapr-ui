@@ -2,14 +2,14 @@ import { BN } from 'bn.js'
 
 import {
   // makeSmartContractDeploy,
-  makeContractCall,
+  // makeContractCall,
   // TransactionVersion,
   // FungibleConditionCode,
 
   serializeCV,
   deserializeCV,
   standardPrincipalCV,
-  uintCV,
+  // uintCV,
 
   // BooleanCV,
   // PrincipalCV,
@@ -19,76 +19,134 @@ import {
   // makeStandardSTXPostCondition,
   // makeContractSTXPostCondition,
   // StacksTestnet,
-  broadcastTransaction,
+  // broadcastTransaction,
   PostConditionMode,
 } from '@blockstack/stacks-transactions'
 
-import {
-  waitForTX,
-} from './tx-utils'
+import { ContractCallArgumentType } from '@blockstack/connect'
+
+// import {
+//   waitForTX,
+// } from './tx-utils'
 
 import {
   network,
 } from '../StacksAccount'
 
-export async function wrap(amount, keys_sender, contract) {
-  console.log("wrap", keys_sender.stacksAddress, amount)
-  const fee = new BN(256)
-  const transaction = await makeContractCall({
-    contractAddress: contract.stacksAddress,
-    contractName: contract.name,
-    functionName: "wrap",
-    functionArgs: [uintCV(amount)],
-    senderKey: keys_sender.secretKey,
-    network,
-    postConditionMode: PostConditionMode.Allow,
-    postConditions: [
-      // makeStandardSTXPostCondition(
-      //   keys_sender.stacksAddress,
-      //   FungibleConditionCode.Equal,
-      //   new BN(amount)
-      // ),
-      // makeStandardFungiblePostCondition(
-      // ),
-    ],
-    fee,
-    // nonce: new BN(0),
-  })
-  const tx_id = await broadcastTransaction(transaction, network)
-  const tx = await waitForTX(network.coreApiUrl, tx_id, 10000)
+import { getAuthOrigin } from '../utils'
 
-  const result = deserializeCV(Buffer.from(tx.tx_result.hex.substr(2), "hex"))
-  return result
+export async function wrap(amount, keys_sender, contract, doContractCall) {
+  return new Promise((accept, reject) => {
+    const fee = new BN(256)
+    doContractCall({
+      authOrigin: getAuthOrigin(),
+      contractAddress: contract.stacksAddress,
+      contractName: contract.name,
+      functionName: 'wrap',
+      functionArgs: [{type: ContractCallArgumentType.UINT, value: amount}],
+      postConditionMode: PostConditionMode.Allow,
+      postConditions: [
+        // makeStandardSTXPostCondition(
+        //   keys_sender.stacksAddress,
+        //   FungibleConditionCode.Equal,
+        //   new BN(amount)
+        // ),
+        // makeStandardFungiblePostCondition(
+        // ),
+      ],
+      fee,
+      finished: data => {
+        console.log('finished!', data)
+        accept()
+      },
+    })
+  })
+
+  // console.log("wrap", keys_sender.stacksAddress, amount)
+  // const fee = new BN(256)
+  // const transaction = await makeContractCall({
+  //   contractAddress: contract.stacksAddress,
+  //   contractName: contract.name,
+  //   functionName: 'wrap',
+  //   functionArgs: [uintCV(amount)],
+  //   senderKey: keys_sender.secretKey,
+  //   network,
+  //   postConditionMode: PostConditionMode.Allow,
+  //   postConditions: [
+  //     // makeStandardSTXPostCondition(
+  //     //   keys_sender.stacksAddress,
+  //     //   FungibleConditionCode.Equal,
+  //     //   new BN(amount)
+  //     // ),
+  //     // makeStandardFungiblePostCondition(
+  //     // ),
+  //   ],
+  //   fee,
+  //   // nonce: new BN(0),
+  // })
+  // const tx_id = await broadcastTransaction(transaction, network)
+  // const tx = await waitForTX(network.coreApiUrl, tx_id, 10000)
+
+  // const result = deserializeCV(Buffer.from(tx.tx_result.hex.substr(2), "hex"))
+  // return result
 }
 
-export async function unwrap(amount, keys_sender, contract) {
+export async function unwrap(amount, keys_sender, contract, doContractCall) {
   console.log("unwrap", keys_sender.stacksAddress, amount)
-  const fee = new BN(256)
-  const transaction = await makeContractCall({
-    contractAddress: contract.stacksAddress,
-    contractName: contract.name,
-    functionName: "unwrap",
-    functionArgs: [uintCV(amount)],
-    senderKey: keys_sender.secretKey,
-    network,
-    postConditionMode: PostConditionMode.Allow,
-    postConditions: [
-      // makeStandardSTXPostCondition(  // TODO(psq): should be the other way around
-      //   keys_sender.stacksAddress,
-      //   FungibleConditionCode.Equal,
-      //   new BN(amount)
-      // ),
-      // makeStandardFungiblePostCondition(
-      // ),
-    ],
-    fee,
-    // nonce: new BN(0),
-  })
-  const tx_id = await broadcastTransaction(transaction, network)
-  const tx = await waitForTX(network.coreApiUrl, tx_id, 10000)
 
-  const result = deserializeCV(Buffer.from(tx.tx_result.hex.substr(2), "hex"))
-  return result
+  return new Promise((accept, reject) => {
+    const fee = new BN(256)
+    doContractCall({
+      authOrigin: getAuthOrigin(),
+      contractAddress: contract.stacksAddress,
+      contractName: contract.name,
+      functionName: 'unwrap',
+      functionArgs: [{type: ContractCallArgumentType.UINT, value: amount}],
+      postConditionMode: PostConditionMode.Allow,
+      postConditions: [
+        // makeStandardSTXPostCondition(
+        //   keys_sender.stacksAddress,
+        //   FungibleConditionCode.Equal,
+        //   new BN(amount)
+        // ),
+        // makeStandardFungiblePostCondition(
+        // ),
+      ],
+      fee,
+      finished: data => {
+        console.log('finished!', data)
+        accept()
+      },
+    })
+ })
+
+  // const fee = new BN(256)
+  // const transaction = await makeContractCall({
+  //   contractAddress: contract.stacksAddress,
+  //   contractName: contract.name,
+  //   functionName: 'unwrap',
+  //   functionArgs: [uintCV(amount)],
+
+  //   senderKey: keys_sender.secretKey,
+  //   network,
+  //   postConditionMode: PostConditionMode.Allow,
+  //   postConditions: [
+  //     // makeStandardSTXPostCondition(  // TODO(psq): should be the other way around
+  //     //   keys_sender.stacksAddress,
+  //     //   FungibleConditionCode.Equal,
+  //     //   new BN(amount)
+  //     // ),
+  //     // makeStandardFungiblePostCondition(
+  //     // ),
+  //   ],
+  //   fee,
+  //   // nonce: new BN(0),
+  // })
+  // const tx_id = await broadcastTransaction(transaction, network)
+  // const tx = await waitForTX(network.coreApiUrl, tx_id, 10000)
+
+  // const result = deserializeCV(Buffer.from(tx.tx_result.hex.substr(2), "hex"))
+  // return result
 }
 
 export async function balanceOf(keys_owner, keys_sender, contract) {

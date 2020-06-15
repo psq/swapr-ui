@@ -2,8 +2,9 @@ import React, { useContext, useEffect, useState } from 'react'
 import { AppContext } from './AppContext'
 import { useSelector, useDispatch } from 'react-redux'
 import {
-  addressToString,
+  // addressToString,
 } from '@blockstack/stacks-transactions'
+import { useConnect } from '@blockstack/connect'
 
 import {
   CContainer,
@@ -23,7 +24,7 @@ import {
 import CIcon from '@coreui/icons-react'
 
 import {
-  getStacksAccount,
+  // getStacksAccount,
   useUpdateSTX,
   useUpdateWRAPR,
   WRAPR_CONTRACT,
@@ -39,18 +40,20 @@ import {
 } from './utils'
 
 export default function Landing (props) {
+  const { doContractCall } = useConnect()
+  const conn = useConnect()
   const context = useContext(AppContext)
   const [state, setState] = useState({ amount: '', wrap: true})
   const [action, setAction] = useState({type: '', amount: 0})
-  const { address } = getStacksAccount(context.userData.appPrivateKey)
+  const address = context.userData.profile.stxAddress
   const dispatch = useDispatch()
   const stx_balance = useSelector(state => state.stx.stx_balance)
   const wrapr_balance = useSelector(state => state.wrapr.wrapr_balance)
   const sender = {
-    stacksAddress: addressToString(address),
-    secretKey: context.userData.appPrivateKey,
+    stacksAddress: address,
   }
 
+  console.log(conn)
   // console.log("state", state)
   // console.log("action", action)
   useUpdateSTX(sender, dispatch, stx_balance)
@@ -58,14 +61,13 @@ export default function Landing (props) {
   useEffect(() => {
     let cleaned_up = false
     const wait = async () => {
-      await new Promise(accept => {setTimeout(() => {accept()}, 5000)})
+      // await new Promise(accept => {setTimeout(() => {accept()}, 5000)})
 
-      // TODO(psq): convert to micro (* 1,000,000)
       const amount = Math.round(parseFloat(action.amount) * 1000000)
       if (action.type === 'wrap') {
         console.log("wrap", amount)
         try {
-          const result = await wrap(amount, sender, WRAPR_CONTRACT)
+          const result = await wrap(amount, sender, WRAPR_CONTRACT, doContractCall)
           console.log("result", result)
         } catch (e) {
           console.log(e)
@@ -73,7 +75,7 @@ export default function Landing (props) {
       } else if (action.type === 'unwrap') {
         console.log("wrap", amount)
         try {
-          const result = await unwrap(amount, sender, WRAPR_CONTRACT)
+          const result = await unwrap(amount, sender, WRAPR_CONTRACT, doContractCall)
           console.log("result", result)
         } catch (e) {
           console.log(e)
@@ -90,7 +92,7 @@ export default function Landing (props) {
     return () => {
       cleaned_up = true
     }
-  }, [action, sender])
+  }, [action, sender, doContractCall])
 
   const handleInputChange = (event) => {
     const value = event.target.value

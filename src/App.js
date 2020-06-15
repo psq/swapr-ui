@@ -4,14 +4,14 @@ import { useDispatch } from 'react-redux'
 
 import { UserSession, AppConfig } from 'blockstack'
 import { Connect, AuthOptions } from '@blockstack/connect'
-import { addressToString } from '@blockstack/stacks-transactions'
+// import { addressToString } from '@blockstack/stacks-transactions'
 
 import { CContainer, CFade } from '@coreui/react'
 
 import './scss/style.scss'
 
 import {
-  getStacksAccount,
+  // getStacksAccount,
   fetchAccount,
 } from './StacksAccount'
 
@@ -119,8 +119,8 @@ export default function App(props) {
       console.log("finished.userData", userData)
       // setAppPrivateKey(userData.appPrivateKey)
       // setAuthResponse(authResponse)
-      const { address } = getStacksAccount(userData.appPrivateKey)
-      const stx_balance = await fetchAccount(addressToString(address))
+      const address = userData.profile.stxAddress
+      const stx_balance = await fetchAccount(address)
       setState({ userData, stx_balance })
     },
     authOrigin,

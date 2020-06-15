@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@blockstack/connect": "^2.7.3",
+    "@blockstack/connect": "^2.7.5",
     "@blockstack/rpc-client": "^0.2.0-alpha.0",
     "@blockstack/stacks-transactions": "^0.4.6",
     "@coreui/coreui": "^3.2.0",

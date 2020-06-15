@@ -8,12 +8,12 @@ import {
   CButton,
 } from '@coreui/react'
 
-import { addressToString } from '@blockstack/stacks-transactions'
+// import { addressToString } from '@blockstack/stacks-transactions'
 
 import { AppContext } from './AppContext'
 import {
   fetchAccount,
-  getStacksAccount,
+  // getStacksAccount,
   getSTX,
 } from './StacksAccount'
 
@@ -25,7 +25,7 @@ export default function Faucet (props) {
   const stx_current = useSelector(state => state.stx.stx_balance)
   const { refresh, stx_status } = state
 
-  const { address } = getStacksAccount(context.userData.appPrivateKey)
+  const address = context.userData.profile.stxAddress
 
   const setThenResetStatus = (state, reset_state) => {
     setState(state)
@@ -40,7 +40,7 @@ export default function Faucet (props) {
       // console.log("useEffect start-faucet")
       const id = setInterval(async () => {
         // console.log("refresh STX-faucet", addressToString(address))
-        const stx_balance = await fetchAccount(addressToString(address))
+        const stx_balance = await fetchAccount(address)
         // console.log("stx_balance", stx_balance)
         if (stx_balance !== stx_current) {
           // console.log("updating store", stx_balance, stx_current)
@@ -79,7 +79,7 @@ export default function Faucet (props) {
             <div className="">STX Faucet</div>
           </CCol>
           <CCol md="3" className="py-3">
-            <CButton color="primary" className="my-2 my-sm-2" type="submit" onClick={() => { claimSTXTestTokens(addressToString(address)) }} >
+            <CButton color="primary" className="my-2 my-sm-2" type="submit" onClick={() => { claimSTXTestTokens(address) }} >
               Claim
             </CButton>
             <div

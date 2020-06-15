@@ -8,11 +8,11 @@ export const getAuthOrigin = () => {
 
   const { origin } = document.location
 
-  if (origin.includes('deploy-preview')) {
-    // Our netlify sites are called "authenticator-demo" for this app, and
-    // "stacks-authenticator" for the authenticator.
-    authOrigin = document.location.origin.replace('authenticator-demo', 'stacks-authenticator')
-  } else if (origin.includes('authenticator-demo')) {
+  if (!origin.includes('localhost')) {
+  //   // Our netlify sites are called "authenticator-demo" for this app, and
+  //   // "stacks-authenticator" for the authenticator.
+  //   authOrigin = document.location.origin.replace('authenticator-demo', 'stacks-authenticator')
+  // } else if (origin.includes('authenticator-demo')) {
     authOrigin = 'https://app.blockstack.org'
   }
 

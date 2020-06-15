@@ -967,11 +967,11 @@
     lodash "^4.17.13"
     to-fast-properties "^2.0.0"
 
-"@blockstack/connect@^2.7.3":
-  version "2.7.3"
-  resolved "https://registry.yarnpkg.com/@blockstack/connect/-/connect-2.7.3.tgz#1139643742cf49f0d7b950834de295693c5f2928"
+"@blockstack/connect@^2.7.5":
+  version "2.7.5"
+  resolved "https://registry.yarnpkg.com/@blockstack/connect/-/connect-2.7.5.tgz#6254ddf52fb4c4eaaaf9d22720e4294a7a0bbaa5"
   dependencies:
-    "@blockstack/ui" "^1.6.1"
+    "@blockstack/ui" "^1.6.3"
     preact "^10.4.0"
     prettier "^2.0.5"
     styled-components "^5.1.0"
@@ -1025,9 +1025,9 @@
     sha.js "^2.4.11"
     smart-buffer "^4.1.0"
 
-"@blockstack/ui@^1.6.1":
-  version "1.6.1"
-  resolved "https://registry.yarnpkg.com/@blockstack/ui/-/ui-1.6.1.tgz#1d52545b50a919561bd758a130d0a2589496f876"
+"@blockstack/ui@^1.6.3":
+  version "1.6.3"
+  resolved "https://registry.yarnpkg.com/@blockstack/ui/-/ui-1.6.3.tgz#3c56f577d88289f4321d63915f65a1861777c00d"
   dependencies:
     "@popperjs/core" "^2.4.0"
     "@reach/alert" "^0.10.2"
