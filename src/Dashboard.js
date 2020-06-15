@@ -16,6 +16,7 @@ import {
 import {
   getStacksAccount,
   useUpdateSTX,
+  useUpdateWRAPR,
 } from './StacksAccount'
 
 import {
@@ -29,12 +30,14 @@ export default function Main(props) {
   const { address } = getStacksAccount(context.userData.appPrivateKey)
   const dispatch = useDispatch()
   const stx_balance = useSelector(state => state.stx.stx_balance)
+  const wrapr_balance = useSelector(state => state.wrapr.wrapr_balance)
 
   const sender = {
     stacksAddress: addressToString(address),
     secretKey: context.userData.appPrivateKey,
   }
   useUpdateSTX(sender, dispatch, stx_balance)
+  useUpdateWRAPR(sender, dispatch, wrapr_balance)
 
   return (
     <div>
@@ -59,6 +62,19 @@ export default function Main(props) {
             </CCardHeader>
             <CCardBody>
               Your balance is {stx_balance !== null ? `${BNWithCommas(stx_balance)} STX` : `not available`}
+            </CCardBody>
+          </CCard>
+        </CCol>
+      </CRow>
+
+      <CRow>
+        <CCol xs="12" sm="12" md="12">
+          <CCard color="">
+            <CCardHeader>
+              WRAPR balance
+            </CCardHeader>
+            <CCardBody>
+              Your balance is {wrapr_balance !== null ? `${BNWithCommas(wrapr_balance)} WRAPR` : `not available`}
             </CCardBody>
           </CCard>
         </CCol>
