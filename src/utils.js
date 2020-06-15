@@ -31,7 +31,7 @@ export function numberWithCommas(x) {
     return x.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",")
 }
 
-export function BNWithCommas(x, d = 2) {
+export function BNWithCommas(x, d = 3) {
   let s = x.toString()
   let l = s.length
 

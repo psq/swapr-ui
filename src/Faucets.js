@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 
 import {
@@ -19,10 +19,10 @@ import {
 
 export default function Faucet (props) {
   const context = useContext(AppContext)
-  const [state, setState] = React.useState({ stx_status: null, refresh: false, stx_current: null})
+  const [state, setState] = useState({ stx_status: null, refresh: false, stx_current: null})
+  const [action, setAction] = useState('')
   const dispatch = useDispatch()
   const stx_current = useSelector(state => state.stx.stx_balance)
-  const stx_spinner = useRef(null)
   const { refresh, stx_status } = state
 
   const { address } = getStacksAccount(context.userData.appPrivateKey)
@@ -43,7 +43,7 @@ export default function Faucet (props) {
         const stx_balance = await fetchAccount(addressToString(address))
         // console.log("stx_balance", stx_balance)
         if (stx_balance !== stx_current) {
-          console.log("updating store", stx_balance, stx_current)
+          // console.log("updating store", stx_balance, stx_current)
           dispatch({type: 'set_stx', stx_balance})
           setState(state => ({...state, refresh: false, stx_current: null}))
         }
@@ -52,10 +52,9 @@ export default function Faucet (props) {
     }
   }, [address, dispatch, refresh, stx_current])
 
+  // TODO(psq): replace with useEffect that can be properly cleaned up
   const claimSTXTestTokens = async (address) => {
-    stx_spinner.current.classList.remove('d-none')
-    // const { refreshSTX } = props.context_updaters
-
+    setAction('claim')
     try {
       const result = await getSTX(address)
       if (result.status === 200) {
@@ -65,13 +64,11 @@ export default function Faucet (props) {
       } else {
         setThenResetStatus({ stx_status: `Claiming tokens failed (${result.status})`}, { stx_status: null})
       }
-      console.log("claim.result", result)
-      stx_spinner.current.classList.add('d-none')
     } catch(e) {
       setThenResetStatus({ stx_status: 'Claiming tokens failed.'}, { stx_status: null})
       console.log(e)
-      stx_spinner.current.classList.add('d-none')
     }
+    setAction('')
   }
 
   return (
@@ -83,13 +80,12 @@ export default function Faucet (props) {
           </CCol>
           <CCol md="3" className="py-3">
             <CButton color="primary" className="my-2 my-sm-2" type="submit" onClick={() => { claimSTXTestTokens(addressToString(address)) }} >
-              <div
-                ref={stx_spinner}
-                role="status"
-                className="d-none spinner-border spinner-border-sm text-info align-text-top mr-2"
-              />
               Claim
             </CButton>
+            <div
+              role="status"
+              className={`${action === '' ? 'd-none ' : ''}spinner-border spinner-border-sm text-info align-text-top ml-2`}
+            />
           </CCol>
           <CCol md="6" className="py-3 row align-items-center">
             { stx_status }

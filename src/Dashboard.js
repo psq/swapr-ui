@@ -19,7 +19,7 @@ import {
 } from './StacksAccount'
 
 import {
-  numberWithCommas,
+  BNWithCommas,
 } from './utils'
 
 import { AppContext } from './AppContext'
@@ -58,7 +58,7 @@ export default function Main(props) {
               STX balance
             </CCardHeader>
             <CCardBody>
-              Your balance is {stx_balance !== null ? `${numberWithCommas(stx_balance)} uSTX` : `not available`}
+              Your balance is {stx_balance !== null ? `${BNWithCommas(stx_balance)} STX` : `not available`}
             </CCardBody>
           </CCard>
         </CCol>

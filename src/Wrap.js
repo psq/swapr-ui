@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { AppContext } from './AppContext'
 import { useSelector, useDispatch } from 'react-redux'
 import {
@@ -26,7 +26,13 @@ import {
   getStacksAccount,
   useUpdateSTX,
   useUpdateWRAPR,
+  WRAPR_CONTRACT,
 } from './StacksAccount'
+
+import {
+  wrap,
+  unwrap,
+} from './clients/wrapr-client'
 
 import {
   BNWithCommas,
@@ -35,6 +41,7 @@ import {
 export default function Landing (props) {
   const context = useContext(AppContext)
   const [state, setState] = useState({ amount: '', wrap: true})
+  const [action, setAction] = useState({type: '', amount: 0})
   const { address } = getStacksAccount(context.userData.appPrivateKey)
   const dispatch = useDispatch()
   const stx_balance = useSelector(state => state.stx.stx_balance)
@@ -44,24 +51,66 @@ export default function Landing (props) {
     secretKey: context.userData.appPrivateKey,
   }
 
-  console.log("state", state)
-  // console.log("wrapr.sender", sender)
+  // console.log("state", state)
+  // console.log("action", action)
   useUpdateSTX(sender, dispatch, stx_balance)
   useUpdateWRAPR(sender, dispatch, wrapr_balance)
+  useEffect(() => {
+    let cleaned_up = false
+    const wait = async () => {
+      await new Promise(accept => {setTimeout(() => {accept()}, 5000)})
 
-  const doAction = () => {
-    console.log("click", state.wrap ? 'wrap' : 'unwrap', state.amount)
-  }
+      // TODO(psq): convert to micro (* 1,000,000)
+      const amount = Math.round(parseFloat(action.amount) * 1000000)
+      if (action.type === 'wrap') {
+        console.log("wrap", amount)
+        try {
+          const result = await wrap(amount, sender, WRAPR_CONTRACT)
+          console.log("result", result)
+        } catch (e) {
+          console.log(e)
+        }
+      } else if (action.type === 'unwrap') {
+        console.log("wrap", amount)
+        try {
+          const result = await unwrap(amount, sender, WRAPR_CONTRACT)
+          console.log("result", result)
+        } catch (e) {
+          console.log(e)
+        }
+      }
+      if (!cleaned_up) {
+        // avoid nasty: Warning: Can't perform a React state update on an unmounted component. This is a no-op, but it indicates a memory leak in your application. To fix, cancel all subscriptions and asynchronous tasks in a useEffect cleanup function.
+        setAction({type: '', amount: 0})
+      }
+    }
+    if (action.type !== '') {
+      wait()
+    }
+    return () => {
+      cleaned_up = true
+    }
+  }, [action, sender])
 
   const handleInputChange = (event) => {
     const value = event.target.value
     const name = event.target.name;
-    setState({[name]: value })
+    setState({...state, [name]: value })
   }
 
   const toggle = () => {
-    console.log("toggle")
+    // console.log("toggle")
     setState({...state, wrap: !state.wrap })
+  }
+
+  const doAction = () => {
+    // console.log("click", state.wrap ? 'wrap' : 'unwrap', state.amount)
+    if (state.wrap) {
+      setAction({type: 'wrap', amount: state.amount})
+    } else {
+      setAction({type: 'unwrap', amount: state.amount})
+    }
+    setState({...state, amount: ''})
   }
 
   const CSTX = () => (
@@ -111,7 +160,7 @@ export default function Landing (props) {
         </CCol>
       </CRow>
       <CRow className="offset-md-4" sm="6" lg="6">
-        <CForm className="col-lg-6 col-sm-6"action="" method="post">
+        <CForm className="col-lg-6 col-sm-6" action="" method="post">
           <CFormGroup className="">
             <CLabel htmlFor="nf-amount">{`Amount to ${state.wrap ? 'wrap' : 'unwrap'}`}</CLabel>
             <CInput
@@ -127,8 +176,14 @@ export default function Landing (props) {
             <CFormText className="help-block">Please enter your amount</CFormText>
           </CFormGroup>
           <CRow>
-            <CCol xs="6">
-              <CButton disabled = {state.amount === ''} color="primary" className="px-4" onClick={doAction}>{state.wrap ? 'Wrap' : 'Unwrap'}</CButton>
+            <CCol>
+              <CButton disabled = {state.amount === ''} color="primary" className="px-4" onClick={doAction}>
+                {state.wrap ? 'Wrap' : 'Unwrap'}
+              </CButton>
+              <div
+                role="status"
+                className={`${action.type === '' ? 'd-none ' : ''}spinner-border spinner-border-sm text-info align-text-top ml-2`}
+              />
             </CCol>
           </CRow>
         </CForm>
