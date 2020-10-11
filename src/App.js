@@ -2,9 +2,8 @@ import React, { useEffect, useContext, Suspense } from 'react'
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 
-import { UserSession, AppConfig } from 'blockstack'
+import { UserSession /*, AppConfig */ } from 'blockstack'
 import { Connect, AuthOptions } from '@blockstack/connect'
-import { didConnect, useBlockstack, useConnectOptions } from 'react-blockstack'
 // import { addressToString } from '@blockstack/stacks-transactions'
 
 import { CContainer, CFade } from '@coreui/react'

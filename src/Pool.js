@@ -8,7 +8,7 @@ export default function Pool (props) {
   return (
     <div className="Pool">
       <h1>Pool</h1>
-      /*
+      {/*
         get token pair list from contract
         pick pair
         input amount token1 or token2
@@ -23,7 +23,7 @@ export default function Pool (props) {
         input amount token1
         input amount token2
         fund
-      */
+      */}
 
     </div>
   )

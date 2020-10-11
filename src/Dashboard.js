@@ -16,7 +16,7 @@ import {
 import {
   // getStacksAccount,
   useUpdateSTX,
-  useUpdateWRAPR,
+  // useUpdateWRAPR,
 } from './StacksAccount'
 
 import {
@@ -31,7 +31,7 @@ export default function Main(props) {
 
   const dispatch = useDispatch()
   const stx_balance = useSelector(state => state.stx.stx_balance)
-  const wrapr_balance = useSelector(state => state.wrapr.wrapr_balance)
+  // const wrapr_balance = useSelector(state => state.wrapr.wrapr_balance)
 
   const sender = {
     stacksAddress: address,
