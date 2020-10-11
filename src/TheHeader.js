@@ -36,8 +36,8 @@ const TheHeader = ({ signOut }) => {
         </CHeaderNav>
       ) : (
         <CHeaderNav className="px-0 col-2 offset-md-10" >
-          <CButton color="primary" className="my-2 my-sm-2" type="submit" onClick={() => {doOpenAuth(false, {authOrigin: 'http://localhost:5555'}) }} >Register</CButton>
-          <CButton color="link" className="my-2 my-sm-2" type="submit" onClick={() => {doOpenAuth(true, {authOrigin: 'http://localhost:5555'}) }}>Sign in</CButton>
+          <CButton color="primary" className="my-2 my-sm-2" type="submit" onClick={() => {doOpenAuth(/*false, {authOrigin: 'https://app.blockstack.org' 'http://localhost:5555' TODO(url) }*/) }} >Register</CButton>
+          <CButton color="link" className="my-2 my-sm-2" type="submit" onClick={() => {doOpenAuth(/*true, {authOrigin: 'https://app.blockstack.org' 'http://localhost:5555' TODO(url) }*/) }}>Sign in</CButton>
         </CHeaderNav>
       )}
     </CHeader>

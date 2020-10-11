@@ -19,12 +19,6 @@ export default [
   },
   {
     _tag: 'CSidebarNavItem',
-    name: 'wrapr',
-    to: '/wrapr',
-    icon: 'cil-sync',
-  },
-  {
-    _tag: 'CSidebarNavItem',
     name: 'Faucets',
     to: '/faucets',
     icon: 'cil-rain',

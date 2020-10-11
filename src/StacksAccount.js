@@ -14,10 +14,11 @@ import {
 import { balanceOf as wraprBalanceOf } from './clients/wrapr-client'
 
 // export const SIDECAR_URL = 'https://sidecar.staging.blockstack.xyz'
-export const SIDECAR_URL = 'http://localhost:3999'
+// export const SIDECAR_URL = 'http://localhost:3999'
+export const SIDECAR_URL = 'https://stacks-node-api.blockstack.org'  // TODO(url)
 export const STACK_API_URL = SIDECAR_URL + '/v2/transactions'
 export const STACKS_API_ACCOUNTS_URL = SIDECAR_URL + '/v2/accounts'
-export const STACKS_API_FAUCET = SIDECAR_URL + '/sidecar/v1/debug/faucet'
+export const STACKS_API_FAUCET = SIDECAR_URL + '/extended/v1/faucets/stx'
 export const WRAPR_CONTRACT = {
   name: 'wrapr',
   stacksAddress: 'ST32N7A3G9P7J0VZ2JCJCG5DMB1TDWY8Q08KQ3B99',

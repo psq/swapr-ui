@@ -37,7 +37,7 @@ export default function Main(props) {
     stacksAddress: address,
   }
   useUpdateSTX(sender, dispatch, stx_balance)
-  useUpdateWRAPR(sender, dispatch, wrapr_balance)
+  // useUpdateWRAPR(sender, dispatch, wrapr_balance)
 
   return (
     <div>
@@ -67,19 +67,25 @@ export default function Main(props) {
         </CCol>
       </CRow>
 
-      <CRow>
-        <CCol xs="12" sm="12" md="12">
-          <CCard color="">
-            <CCardHeader>
-              WRAPR balance
-            </CCardHeader>
-            <CCardBody>
-              Your balance is {wrapr_balance !== null ? `${BNWithCommas(wrapr_balance)} WRAPR` : `not available`}
-            </CCardBody>
-          </CCard>
-        </CCol>
-      </CRow>
-
+      
+      {/*
+        display list of current liquidity pools for user with amounts
+      */}
+      
+      {/*
+        <CRow>
+          <CCol xs="12" sm="12" md="12">
+            <CCard color="">
+              <CCardHeader>
+                WRAPR balance
+              </CCardHeader>
+              <CCardBody>
+                Your balance is {wrapr_balance !== null ? `${BNWithCommas(wrapr_balance)} WRAPR` : `not available`}
+              </CCardBody>
+            </CCard>
+          </CCol>
+        </CRow>
+      */}
     </div>
   )
 }

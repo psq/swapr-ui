@@ -4,6 +4,7 @@ import { useDispatch } from 'react-redux'
 
 import { UserSession, AppConfig } from 'blockstack'
 import { Connect, AuthOptions } from '@blockstack/connect'
+import { didConnect, useBlockstack, useConnectOptions } from 'react-blockstack'
 // import { addressToString } from '@blockstack/stacks-transactions'
 
 import { CContainer, CFade } from '@coreui/react'
@@ -35,20 +36,26 @@ const loading = (
   </div>
 )
 
-const appConfig = new AppConfig(['store_write'], document.location.href, '', '/manifest.json', 'https://test-registrar.blockstack.org')
-const userSession = new UserSession({ appConfig })
-console.log("appConfig", appConfig)
+// const appConfig = new AppConfig(['store_write'], document.location.href, '', '/manifest.json', 'https://test-registrar.blockstack.org')
+const userSession = new UserSession() //({ appConfig })
+// console.log("appConfig", appConfig)
 
 export default function App(props) {
   const [state, setState] = React.useState(defaultState)
   const dispatch = useDispatch()
+  // const [userSession, setUserSession] = useState();
+  // const {authenticated, userSession, userData, signIn, signOut, person} = useBlockstack()
+  // console.log("authenticated", authenticated)
+  // console.log("userSession", userSession)
+  // console.log("userData", userData)
+  // console.log("person", person)
+  // console.log("signIn, signOut", signIn, signOut)
   // const [authResponse, setAuthResponse] = React.useState('')
   // const [appPrivateKey, setAppPrivateKey] = React.useState('')
 
   const authOrigin = getAuthOrigin()
 
   const signOut = () => {
-    userSession.signUserOut()
     setState({ userData: null, show_landing: true, })
     dispatch({type: 'set_stx', stx_balance: null})
   }
@@ -109,11 +116,33 @@ export default function App(props) {
     )
   }
 
+  // const authOptions = useConnectOptions({
+  //   authOrigin,
+  //   finished: async ({ userSession, authResponse }) => {
+  //     // didConnect({ userSession })
+  //     console.log("authOptions.finished", userSession, authResponse)
+  //     // TODO(psq): this gets called 3 times
+  //     const userData = userSession.loadUserData()
+  //     console.log("finished.userData", userData)
+  //     // setAppPrivateKey(userData.appPrivateKey)
+  //     // setAuthResponse(authResponse)
+  //     const address = userData.profile.stxAddress
+  //     const stx_balance = await fetchAccount(address)
+  //     setState({ userData, stx_balance })
+  //   },
+  //   appDetails: {
+  //     name: 'swapr',
+  //     icon: `${document.location.origin}/swapr-square.png`,
+  //   },
+  // })
+
+
   const authOptions: AuthOptions = {
     manifestPath: '/manifest.json',
     redirectTo: '/',
     userSession,
     finished: async ({ userSession, authResponse }) => {
+      console.log("authOptions.finished", userSession, authResponse)
       // TODO(psq): this gets called 3 times
       const userData = userSession.loadUserData()
       console.log("finished.userData", userData)

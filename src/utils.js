@@ -1,7 +1,8 @@
 import { RPCClient } from '@blockstack/rpc-client'
 
 export const getAuthOrigin = () => {
-  let authOrigin = 'http://localhost:5555'
+  // let authOrigin = 'http://localhost:5555'
+  let authOrigin = 'https://app.blockstack.org'  // TODO(url)
   // In order to have deploy previews use the same version of the authenticator,
   // we detect if this is a 'deploy preview' and change the origin to point to the
   // same PR's deploy preview in the authenticator.
@@ -20,10 +21,11 @@ export const getAuthOrigin = () => {
 };
 
 export const getRPCClient = () => {
-  const { origin } = document.location
-  const url = origin.includes('localhost')
-    ? 'http://localhost:3999'
-    : 'https://sidecar.staging.blockstack.xyz';
+  // const { origin } = document.location
+  // const url = origin.includes('localhost')
+  //   ? 'http://localhost:3999'
+  //   : 'https://sidecar.staging.blockstack.xyz';
+  const url = 'https://stacks-node-api.blockstack.org'  // TODO(url)
   return new RPCClient(url)
 }
 
