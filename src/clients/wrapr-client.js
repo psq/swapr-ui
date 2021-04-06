@@ -13,7 +13,7 @@ import {
 
 import {
   network,
-} from '../StacksAccount'
+} from '../utils'
 
 import { getAuthOrigin } from '../utils'
 

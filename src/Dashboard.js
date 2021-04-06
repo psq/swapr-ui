@@ -21,13 +21,14 @@ import {
 
 import {
   BNWithCommas,
+  is_mainnet,
 } from './utils'
 
 import { AppContext } from './AppContext'
 
 export default function Main(props) {
   const context = useContext(AppContext)
-  const address = context.userData.profile.stxAddress
+  const address = is_mainnet ? context.userData.profile.stxAddress.mainnet : context.userData.profile.stxAddress.testnet
   console.log("address", address)
 
   const dispatch = useDispatch()
@@ -49,9 +50,7 @@ export default function Main(props) {
               Wallet
             </CCardHeader>
             <CCardBody>
-              Your address is {address.mainnet}
-              <br/>
-              Your address is {address.testnet}
+              Your address is {address}
             </CCardBody>
           </CCard>
         </CCol>

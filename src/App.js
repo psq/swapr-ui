@@ -24,7 +24,10 @@ import Landing from './Landing'
 // import Main from './Main'
 // import Pool from './Pool'
 // import Profile from './Profile'
-import { getAuthOrigin } from './utils'
+import {
+  getAuthOrigin,
+  is_mainnet,
+} from './utils'
 
 import routes from './routes'
 
@@ -171,7 +174,7 @@ export default function App(props) {
       // setAppPrivateKey(userSession.loadUserData().appPrivateKey);
       setAuthResponse(authResponse)
 
-      const address = userData.profile.stxAddress
+      const address = is_mainnet ? userData.profile.stxAddress.mainnet : userData.profile.stxAddress.mainnet
       const stx_balance = await fetchAccount(address)
       setState({ userData, stx_balance })
 

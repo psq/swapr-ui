@@ -17,6 +17,10 @@ import {
   getSTX,
 } from './StacksAccount'
 
+import {
+  is_mainnet,
+} from './utils'
+
 export default function Faucet (props) {
   const context = useContext(AppContext)
   const [state, setState] = useState({ stx_status: null, refresh: false, stx_current: null})
@@ -25,7 +29,7 @@ export default function Faucet (props) {
   const stx_current = useSelector(state => state.stx.stx_balance)
   const { refresh, stx_status } = state
 
-  const address = context.userData.profile.stxAddress
+  const address = is_mainnet ? context.userData.profile.stxAddress.mainnet : context.userData.profile.stxAddress.testnet
 
   const setThenResetStatus = (state, reset_state) => {
     setState(state)

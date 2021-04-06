@@ -37,6 +37,7 @@ import {
 
 import {
   BNWithCommas,
+  is_mainnet,
 } from './utils'
 
 export default function Landing (props) {
@@ -45,7 +46,7 @@ export default function Landing (props) {
   const context = useContext(AppContext)
   const [state, setState] = useState({ amount: '', wrap: true})
   const [action, setAction] = useState({type: '', amount: 0})
-  const address = context.userData.profile.stxAddress
+  const address = is_mainnet ? context.userData.profile.stxAddress.mainnet : context.userData.profile.stxAddress.testnet
   const dispatch = useDispatch()
   const stx_balance = useSelector(state => state.stx.stx_balance)
   const wrapr_balance = useSelector(state => state.wrapr.wrapr_balance)

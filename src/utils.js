@@ -1,16 +1,30 @@
+import {
+  StacksMainnet,
+  StacksTestnet,
+} from '@stacks/network'
+
 // import { RPCClient } from '@blockstack/rpc-client'
 
 export const getAuthOrigin = () => {
+  if (process.env.REACT_APP_NETWORK_ENV === 'mainnet') {
+    return 'https://stacks-node-api.mainnet.stacks.co'
+  }
   let authOrigin = 'https://stacks-api.nanorails.com' // mocknet
 
   const { origin } = document.location
 
+  // TODO(psq): staging shouold probably also use mocknet, or testnet, not mainnet till late in the cycle
   if (!origin.includes('localhost')) {
     authOrigin = 'https://stacks-node-api.mainnet.stacks.co'  // mainnet
   }
 
   return authOrigin
-};
+}
+
+export const network = process.env.REACT_APP_NETWORK_ENV === 'mainnet' ? new StacksMainnet() : new StacksTestnet()
+network.coreApiUrl = getAuthOrigin()
+
+export const is_mainnet = process.env.REACT_APP_NETWORK_ENV === 'mainnet'
 
 // export const getRPCClient = () => {
 //   // const { origin } = document.location

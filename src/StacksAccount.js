@@ -10,16 +10,12 @@ import {
   AddressHashMode,
 } from '@stacks/transactions'
 
-import {
-  StacksMainnet,
-  StacksTestnet,
-} from '@stacks/network'
-
 
 import { balanceOf as wraprBalanceOf } from './clients/wrapr-client'
-import { getAuthOrigin } from './utils'
+import {
+  getAuthOrigin,
+} from './utils'
 
-// export const SIDECAR_URL = 'https://sidecar.staging.blockstack.xyz'
 export const SIDECAR_URL = getAuthOrigin()
 // export const SIDECAR_URL = 'https://stacks-node-api.blockstack.org'  // TODO(url)
 export const STACK_API_URL = SIDECAR_URL + '/v2/transactions'
@@ -96,5 +92,3 @@ export function useUpdateWRAPR(sender, dispatch, current_wrapr_balance) {
   }, [sender, dispatch, current_wrapr_balance])
 }
 
-export const network = new StacksTestnet()
-network.coreApiUrl = SIDECAR_URL
