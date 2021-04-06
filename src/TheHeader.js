@@ -17,6 +17,8 @@ const TheHeader = ({ signOut }) => {
   const context = useContext(AppContext)
   const { doOpenAuth } = useConnect()
 
+  console.log("context.userData", context.userData)
+
   // const toggleSidebar = () => {
   //   const val = [true, 'responsive'].includes(sidebar_show) ? false : 'responsive'
   //   dispatch({type: 'set_sidebar', sidebar_show: val})
@@ -31,7 +33,7 @@ const TheHeader = ({ signOut }) => {
     <CHeader>
       {context.userData ? (
         <CHeaderNav className="px-0 col-6 offset-md-6" >
-          <div className="col-9 text-right">{context.userData.username || 'swapr user'}</div>
+          <div className="col-9 text-right">{context.userData.username || context.userData.identityAddress}</div>
           <CButton color="link" className="my-2 my-sm-2" type="submit" onClick={() => { signOut() }} >Sign off</CButton>
         </CHeaderNav>
       ) : (

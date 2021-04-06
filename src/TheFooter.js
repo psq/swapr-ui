@@ -6,7 +6,7 @@ const TheFooter = () => {
     <CFooter fixed={false}>
       <div>
         <a href="https://swapr.runkodapps.com" target="_blank" rel="noopener noreferrer">swapr</a>
-        <span className="ml-1">&copy; 2020 psq</span>
+        <span className="ml-1">&copy; 2021 swapr All Rights Reserved</span>
       </div>
       <div className="mfs-auto">
         <span className="mr-1">Powered by</span>
