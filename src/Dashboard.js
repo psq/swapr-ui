@@ -28,6 +28,7 @@ import { AppContext } from './AppContext'
 export default function Main(props) {
   const context = useContext(AppContext)
   const address = context.userData.profile.stxAddress
+  console.log("address", address)
 
   const dispatch = useDispatch()
   const stx_balance = useSelector(state => state.stx.stx_balance)
@@ -48,7 +49,9 @@ export default function Main(props) {
               Wallet
             </CCardHeader>
             <CCardBody>
-              Your address is {address}
+              Your address is {address.mainnet}
+              <br/>
+              Your address is {address.testnet}
             </CCardBody>
           </CCard>
         </CCol>
@@ -67,11 +70,11 @@ export default function Main(props) {
         </CCol>
       </CRow>
 
-      
+
       {/*
         display list of current liquidity pools for user with amounts
       */}
-      
+
       {/*
         <CRow>
           <CCol xs="12" sm="12" md="12">

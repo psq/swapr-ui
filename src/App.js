@@ -2,9 +2,8 @@ import React, { useEffect, useContext, Suspense } from 'react'
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 
-import { UserSession /*, AppConfig */ } from 'blockstack'
-import { Connect, AuthOptions } from '@blockstack/connect'
-// import { addressToString } from '@blockstack/stacks-transactions'
+import { AppConfig, UserSession } from '@stacks/connect'
+import { Connect } from '@stacks/connect-react'
 
 import { CContainer, CFade } from '@coreui/react'
 
@@ -35,8 +34,9 @@ const loading = (
   </div>
 )
 
-// const appConfig = new AppConfig(['store_write'], document.location.href, '', '/manifest.json', 'https://test-registrar.blockstack.org')
-const userSession = new UserSession() //({ appConfig })
+const appConfig = new AppConfig([])
+const userSession = new UserSession({ appConfig })
+
 // console.log("appConfig", appConfig)
 
 export default function App(props) {
@@ -51,6 +51,7 @@ export default function App(props) {
   // console.log("signIn, signOut", signIn, signOut)
   // const [authResponse, setAuthResponse] = React.useState('')
   // const [appPrivateKey, setAppPrivateKey] = React.useState('')
+  const [authResponse, setAuthResponse] = React.useState('')
 
   const authOrigin = getAuthOrigin()
 
@@ -136,43 +137,71 @@ export default function App(props) {
   // })
 
 
+  // const authOptions: AuthOptions = {
+  //   manifestPath: '/manifest.json',
+  //   redirectTo: '/',
+  //   userSession,
+  //   finished: async ({ userSession, authResponse }) => {
+  //     console.log("authOptions.finished", userSession, authResponse)
+  //     // TODO(psq): this gets called 3 times
+  //     const userData = userSession.loadUserData()
+  //     console.log("finished.userData", userData)
+  //     // setAppPrivateKey(userData.appPrivateKey)
+  //     // setAuthResponse(authResponse)
+  //     const address = userData.profile.stxAddress
+  //     const stx_balance = await fetchAccount(address)
+  //     setState({ userData, stx_balance })
+  //   },
+  //   authOrigin,
+  //   appDetails: {
+  //     name: 'swapr',
+  //     icon: `${document.location.origin}/swapr-square.png`,
+  //   },
+  // }
+
+
   const authOptions: AuthOptions = {
     manifestPath: '/manifest.json',
     redirectTo: '/',
     userSession,
     finished: async ({ userSession, authResponse }) => {
       console.log("authOptions.finished", userSession, authResponse)
-      // TODO(psq): this gets called 3 times
-      const userData = userSession.loadUserData()
+      const userData = userSession.loadUserData();
       console.log("finished.userData", userData)
-      // setAppPrivateKey(userData.appPrivateKey)
-      // setAuthResponse(authResponse)
+      // setAppPrivateKey(userSession.loadUserData().appPrivateKey);
+      setAuthResponse(authResponse)
+
       const address = userData.profile.stxAddress
       const stx_balance = await fetchAccount(address)
       setState({ userData, stx_balance })
+
+      console.log("authOptions.finished - done")
+    },
+    onCancel: () => {
+      console.log('popup closed!');
     },
     authOrigin,
     appDetails: {
       name: 'swapr',
       icon: `${document.location.origin}/swapr-square.png`,
     },
-  }
+  };
+
 
   // const { userData } = state
   // console.log("userData", userData)
   // console.log("app.state", state)
   return (
     <div className="App">
-      <Connect authOptions={authOptions}>
-        <AppContext.Provider value={state}>
-
+      <AppContext.Provider value={state}>
+        <Connect authOptions={authOptions}>
           <Router>
             {/*authResponse && <input type="hidden" id="auth-response" value={authResponse} />*/}
             {/*appPrivateKey && <input type="hidden" id="app-private-key" value={appPrivateKey} />*/}
             <Layout />
           </Router>
-        </AppContext.Provider>
-      </Connect>
+        </Connect>
+      </AppContext.Provider>
     </div>
   )
 }

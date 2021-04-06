@@ -1,5 +1,28 @@
 import { createStore, combineReducers } from 'redux'
 
+const updateTokens = (state = {tokens: []}, {type, tokens, token}) => {
+  if (type === 'set_tokens') {
+    console.log("updateTokens reducer", tokens)
+    return {...state, tokens}
+  } else if (type === 'set_token') {
+    // console.log("updateTokens reducer", tokens)
+    const tokens = state.tokens
+    tokens[token.principal] = token
+    return {...state, tokens}
+  } else {
+    return state
+  }
+}
+
+const updatePairs = (state = {pairs: []}, {type, pairs}) => {
+  if (type === 'set_pairs') {
+    // console.log("updatePairs reducer", pairs)
+    return {...state, pairs}
+  } else {
+    return state
+  }
+}
+
 const updateSTXReducer = (state = {stx_balance: null}, {type, stx_balance}) => {
   if (type === 'set_stx') {
     return {...state, stx_balance}
@@ -26,6 +49,8 @@ const changeSidebarState = (state = {sidebar_show: 'responsive'}, { type, ...res
 }
 
 const rootReducer = combineReducers({
+  tokens: updateTokens,
+  pairs: updatePairs,
   stx: updateSTXReducer,
   wrapr: updateWRAPRReducer,
   sidebar: changeSidebarState,

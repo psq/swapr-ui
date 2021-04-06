@@ -9,9 +9,11 @@ import {
   CSidebarNavTitle,
   CSidebarMinimizer,
   CSidebarNavDropdown,
-  CSidebarNavItem,
+  // CSidebarNavItem,
   CImg,
 } from '@coreui/react'
+
+import { CSidebarNavItem } from './SidebarNavItem'
 
 // import CIcon from '@coreui/icons-react'
 

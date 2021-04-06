@@ -4,7 +4,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import {
   // addressToString,
 } from '@blockstack/stacks-transactions'
-import { useConnect } from '@blockstack/connect'
+import { useConnect } from '@stacks/connect-react'
 
 import {
   CContainer,

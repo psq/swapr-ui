@@ -1,33 +1,26 @@
-import { RPCClient } from '@blockstack/rpc-client'
+// import { RPCClient } from '@blockstack/rpc-client'
 
 export const getAuthOrigin = () => {
-  // let authOrigin = 'http://localhost:5555'
-  let authOrigin = 'https://app.blockstack.org'  // TODO(url)
-  // In order to have deploy previews use the same version of the authenticator,
-  // we detect if this is a 'deploy preview' and change the origin to point to the
-  // same PR's deploy preview in the authenticator.
+  let authOrigin = 'https://stacks-api.nanorails.com' // mocknet
 
   const { origin } = document.location
 
   if (!origin.includes('localhost')) {
-  //   // Our netlify sites are called "authenticator-demo" for this app, and
-  //   // "stacks-authenticator" for the authenticator.
-  //   authOrigin = document.location.origin.replace('authenticator-demo', 'stacks-authenticator')
-  // } else if (origin.includes('authenticator-demo')) {
-    authOrigin = 'https://app.blockstack.org'
+    authOrigin = 'https://stacks-node-api.mainnet.stacks.co'  // mainnet
   }
 
   return authOrigin
 };
 
-export const getRPCClient = () => {
-  // const { origin } = document.location
-  // const url = origin.includes('localhost')
-  //   ? 'http://localhost:3999'
-  //   : 'https://sidecar.staging.blockstack.xyz';
-  const url = 'https://stacks-node-api.blockstack.org'  // TODO(url)
-  return new RPCClient(url)
-}
+// export const getRPCClient = () => {
+//   // const { origin } = document.location
+//   // const url = origin.includes('localhost')
+//   //   ? 'http://localhost:3999'
+//   //   : 'https://sidecar.staging.blockstack.xyz';
+//   // const url = 'https://stacks-node-api.blockstack.org'  // TODO(url)
+//   const url = 'http://localhost:3999'  // TODO(url)
+//   return new RPCClient(url)
+// }
 
 export function numberWithCommas(x) {
     return x.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",")

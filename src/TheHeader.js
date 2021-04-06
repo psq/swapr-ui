@@ -7,7 +7,7 @@ import {
 } from '@coreui/react'
 // import CIcon from '@coreui/icons-react'
 
-import { useConnect } from '@blockstack/connect'
+import { useConnect } from '@stacks/connect-react'
 
 import { AppContext } from './AppContext'
 
@@ -32,7 +32,7 @@ const TheHeader = ({ signOut }) => {
       {context.userData ? (
         <CHeaderNav className="px-0 col-6 offset-md-6" >
           <div className="col-9 text-right">{context.userData.username || 'swapr user'}</div>
-          <CButton color="link" className="my-2 my-sm-2" type="submit" onClick={() => {signOut()}} >Sign off</CButton>
+          <CButton color="link" className="my-2 my-sm-2" type="submit" onClick={() => { signOut() }} >Sign off</CButton>
         </CHeaderNav>
       ) : (
         <CHeaderNav className="px-0 col-2 offset-md-10" >

@@ -8,14 +8,20 @@ import {
   addressFromPublicKeys,
   AddressVersion,
   AddressHashMode,
+} from '@stacks/transactions'
+
+import {
+  StacksMainnet,
   StacksTestnet,
-} from '@blockstack/stacks-transactions'
+} from '@stacks/network'
+
 
 import { balanceOf as wraprBalanceOf } from './clients/wrapr-client'
+import { getAuthOrigin } from './utils'
 
 // export const SIDECAR_URL = 'https://sidecar.staging.blockstack.xyz'
-// export const SIDECAR_URL = 'http://localhost:3999'
-export const SIDECAR_URL = 'https://stacks-node-api.blockstack.org'  // TODO(url)
+export const SIDECAR_URL = getAuthOrigin()
+// export const SIDECAR_URL = 'https://stacks-node-api.blockstack.org'  // TODO(url)
 export const STACK_API_URL = SIDECAR_URL + '/v2/transactions'
 export const STACKS_API_ACCOUNTS_URL = SIDECAR_URL + '/v2/accounts'
 export const STACKS_API_FAUCET = SIDECAR_URL + '/extended/v1/faucets/stx'

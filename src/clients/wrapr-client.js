@@ -1,33 +1,15 @@
 import { BN } from 'bn.js'
 
 import {
-  // makeSmartContractDeploy,
-  // makeContractCall,
-  // TransactionVersion,
-  // FungibleConditionCode,
 
   serializeCV,
   deserializeCV,
   standardPrincipalCV,
-  // uintCV,
+  uintCV,
 
-  // BooleanCV,
-  // PrincipalCV,
-  // UIntCV,
-
-  // ChainID,
-  // makeStandardSTXPostCondition,
-  // makeContractSTXPostCondition,
-  // StacksTestnet,
-  // broadcastTransaction,
+  ContractCallArgumentType,
   PostConditionMode,
-} from '@blockstack/stacks-transactions'
-
-import { ContractCallArgumentType } from '@blockstack/connect'
-
-// import {
-//   waitForTX,
-// } from './tx-utils'
+} from '@stacks/transactions'
 
 import {
   network,
@@ -38,28 +20,29 @@ import { getAuthOrigin } from '../utils'
 export async function wrap(amount, keys_sender, contract, doContractCall) {
   return new Promise((accept, reject) => {
     const fee = new BN(256)
-    doContractCall({
-      authOrigin: getAuthOrigin(),
-      contractAddress: contract.stacksAddress,
-      contractName: contract.name,
-      functionName: 'wrap',
-      functionArgs: [{type: ContractCallArgumentType.UINT, value: amount}],
-      postConditionMode: PostConditionMode.Allow,
-      postConditions: [
-        // makeStandardSTXPostCondition(
-        //   keys_sender.stacksAddress,
-        //   FungibleConditionCode.Equal,
-        //   new BN(amount)
-        // ),
-        // makeStandardFungiblePostCondition(
-        // ),
-      ],
-      fee,
-      finished: data => {
-        console.log('finished!', data)
-        accept()
-      },
-    })
+    alert("stubbed")
+    // doContractCall({
+    //   authOrigin: getAuthOrigin(),
+    //   contractAddress: contract.stacksAddress,
+    //   contractName: contract.name,
+    //   functionName: 'wrap',
+    //   functionArgs: [{type: ContractCallArgumentType.UINT, value: amount}],
+    //   postConditionMode: PostConditionMode.Allow,
+    //   postConditions: [
+    //     // makeStandardSTXPostCondition(
+    //     //   keys_sender.stacksAddress,
+    //     //   FungibleConditionCode.Equal,
+    //     //   new BN(amount)
+    //     // ),
+    //     // makeStandardFungiblePostCondition(
+    //     // ),
+    //   ],
+    //   fee,
+    //   finished: data => {
+    //     console.log('finished!', data)
+    //     accept()
+    //   },
+    // })
   })
 
   // console.log("wrap", keys_sender.stacksAddress, amount)
@@ -101,7 +84,7 @@ export async function unwrap(amount, keys_sender, contract, doContractCall) {
       contractAddress: contract.stacksAddress,
       contractName: contract.name,
       functionName: 'unwrap',
-      functionArgs: [{type: ContractCallArgumentType.UINT, value: amount}],
+      functionArgs: [uintCV(amount)],
       postConditionMode: PostConditionMode.Allow,
       postConditions: [
         // makeStandardSTXPostCondition(
