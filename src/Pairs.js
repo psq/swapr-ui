@@ -5,18 +5,18 @@ import { Link } from "react-router-dom"
 // import { AppContext } from './AppContext'
 
 import {
-  checkDifferences,
+  checkPairDifferences,
   useUpdatePairs,
 } from './swapr'
 
 export default function Pairs (props) {
   // const context = useContext(AppContext)
-  
+
   const dispatch = useDispatch()
   const { pairs } = useSelector(state => state.pairs, (item, previous) => {
-    return checkDifferences(item, previous)
+    return checkPairDifferences(item, previous)
   })
-  useUpdatePairs(dispatch, pairs)
+  useUpdatePairs(dispatch)
   console.log("Exchange", pairs)
 
   return (
@@ -27,12 +27,8 @@ export default function Pairs (props) {
           {
             pairs.map(pair => {
               return <li key={pair.id}>
-                <Link to={`/pair/${pair.name}`}>{pair.name}</Link>
-                {pair.swapr_token_principal}
-                {pair.token_x_principal}
-                {pair.token_y_principal}
-                {pair.shares_total.toString()
-              }</li>
+                <Link to={`/pair/${pair.token_x_principal}$${pair.token_y_principal}`}>{pair.name}</Link>
+              </li>
             })
           }
         </ul>

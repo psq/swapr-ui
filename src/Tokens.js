@@ -1,31 +1,35 @@
 import React, { /*useContext, useEffect, useState*/ } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
+import { Link } from "react-router-dom"
 
 // import { AppContext } from './AppContext'
 
 import {
-  checkDifferences,
+  checkTokenDifferences,
   useUpdatePairs,
 } from './swapr'
 
 export default function Tokens (props) {
   // const context = useContext(AppContext)
-  
-  const dispatch = useDispatch()
-  const { pairs } = useSelector(state => state.pairs, (item, previous) => {
-    return checkDifferences(item, previous)
-  })
-  useUpdatePairs(dispatch, pairs)
-  console.log("Tokens", pairs)
 
+  const dispatch = useDispatch()
+  const { tokens } = useSelector(state => state.tokens, (item, previous) => {
+    return checkTokenDifferences(item, previous)
+  })
+  useUpdatePairs(dispatch)
+  console.log("Tokens", tokens)
+  const token_array = Object.keys(tokens).map(k => tokens[k])
+  const token_array_sorted = token_array.sort((a, b) => a.name.localeCompare(b.name))
   return (
     <div className="Tokens">
       <h1>Tokens</h1>
-        Pairs: {pairs.length}
+        Tokens: {tokens.length}
         <ul>
           {
-            pairs.map(pair => {
-              return <li key={pair.id}>{pair.name} {pair.swapr_token_principal} {pair.token_x_principal} {pair.token_y_principal} {pair.shares_total.toString()}</li>
+            token_array_sorted.map(token => {
+              return <li key={token.principal}>
+                <Link to={`/token/${token.principal}`}>{token.name} ({token.symbol})</Link>
+              </li>
             })
           }
         </ul>

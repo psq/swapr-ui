@@ -70,7 +70,7 @@ export async function wrap(amount, keys_sender, contract, doContractCall) {
   // const tx_id = await broadcastTransaction(transaction, network)
   // const tx = await waitForTX(network.coreApiUrl, tx_id, 10000)
 
-  // const result = deserializeCV(Buffer.from(tx.tx_result.hex.substr(2), "hex"))
+  // const result = deserializeCV(Buffer.from(tx.tx_result.hex.slice(2), 'hex'))
   // return result
 }
 
@@ -128,7 +128,7 @@ export async function unwrap(amount, keys_sender, contract, doContractCall) {
   // const tx_id = await broadcastTransaction(transaction, network)
   // const tx = await waitForTX(network.coreApiUrl, tx_id, 10000)
 
-  // const result = deserializeCV(Buffer.from(tx.tx_result.hex.substr(2), "hex"))
+  // const result = deserializeCV(Buffer.from(tx.tx_result.hex.slice(2), 'hex'))
   // return result
 }
 
@@ -148,7 +148,7 @@ export async function balanceOf(keys_owner, keys_sender, contract) {
   if (response.ok) {
     const result = await response.json()
     if (result.okay) {
-      const result_data = deserializeCV(Buffer.from(result.result.substr(2), "hex"))
+      const result_data = deserializeCV(Buffer.from(result.result.slice(2), 'hex'))
       // console.log("result_data", result_data)
       return result_data.value.value
     } else {

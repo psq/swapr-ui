@@ -15,10 +15,13 @@ import {
   SIDECAR_URL,
 } from './StacksAccount'
 
-const cvToHex = val => `"0x${serializeCV(val).toString("hex")}"`
+const cvToHex = val => `"0x${serializeCV(val).toString('hex')}"`
 
-export const SWAPR_ADDRESS = 'ST3J2GVMMM2R07ZFBJDWTYEYAR8FZH5WKDTFJ9AHA'
-export const SWAPR_CONTRACT_NAME = 'swapr'
+export const SWAPR_ADDRESS = process.env.REACT_APP_SWAPR_STX
+export const SWAPR_CONTRACT_NAME = process.env.REACT_APP_CONTRACT_NAME_SWAPR
+
+console.log("SWAPR_ADDRESS", SWAPR_ADDRESS)
+console.log("SWAPR_CONTRACT_NAME", SWAPR_CONTRACT_NAME)
 
 function parseTokenPrincipal(token_principal) {
   const parts = token_principal.split('.')
@@ -37,12 +40,12 @@ export async function getTokenBalanceOf(token_principal, owner_principal) {
     },
     body: `{"sender":"${SWAPR_ADDRESS}","arguments":[${cvToHex(standardPrincipalCV(owner_principal))}]}`,
   }
-  const url = `${SIDECAR_URL}/v2/contracts/call-read/${address}/${name}/balance-of`
+  const url = `${SIDECAR_URL}/v2/contracts/call-read/${address}/${name}/get-balance-of`
   const result = await fetch(url, options)
   const json = await result.json()
   console.log("getTokenBalanceOf.result", json)
   if (json.okay) {
-    const value = deserializeCV(Buffer.from(json.result.substr(2), "hex"))
+    const value = deserializeCV(Buffer.from(json.result.slice(2), 'hex'))
     console.log("getTokenBalanceOf.value", value.value.value)
 
     return value.value.value
@@ -60,15 +63,15 @@ export async function getTokenName(token_principal) {
     },
     body: `{"sender":"${SWAPR_ADDRESS}","arguments":[]}`,
   }
-  const url = `${SIDECAR_URL}/v2/contracts/call-read/${address}/${name}/name`
+  const url = `${SIDECAR_URL}/v2/contracts/call-read/${address}/${name}/get-name`
   const result = await fetch(url, options)
   const json = await result.json()
   console.log("getTokenName.result", json)
   if (json.okay) {
-    const value = deserializeCV(Buffer.from(json.result.substr(2), "hex"))
-    console.log("getTokenName.value", value.value.value)
+    const value = deserializeCV(Buffer.from(json.result.slice(2), 'hex'))
+    console.log("getTokenName.value", value.value.data)
 
-    return value.value.value
+    return value.value.data
   }
   console.log("getTokenName: not okay")
   return 'N/A'
@@ -83,15 +86,15 @@ export async function getTokenSymbol(token_principal) {
     },
     body: `{"sender":"${SWAPR_ADDRESS}","arguments":[]}`,
   }
-  const url = `${SIDECAR_URL}/v2/contracts/call-read/${address}/${name}/symbol`
+  const url = `${SIDECAR_URL}/v2/contracts/call-read/${address}/${name}/get-symbol`
   const result = await fetch(url, options)
   const json = await result.json()
   console.log("getTokenSymbol.result", json)
   if (json.okay) {
-    const value = deserializeCV(Buffer.from(json.result.substr(2), "hex"))
-    console.log("getTokenSymbol.value", value.value.value)
+    const value = deserializeCV(Buffer.from(json.result.slice(2), 'hex'))
+    console.log("getTokenSymbol.value", value.value.data)
 
-    return value.value.value
+    return value.value.data
   }
   console.log("getTokenSymbol: not okay")
   return 'N/A'
@@ -106,12 +109,12 @@ export async function getTokenDecimals(token_principal) {
     },
     body: `{"sender":"${SWAPR_ADDRESS}","arguments":[]}`,
   }
-  const url = `${SIDECAR_URL}/v2/contracts/call-read/${address}/${name}/decimals`
+  const url = `${SIDECAR_URL}/v2/contracts/call-read/${address}/${name}/get-decimals`
   const result = await fetch(url, options)
   const json = await result.json()
   console.log("getTokenDecimals.result", json)
   if (json.okay) {
-    const value = deserializeCV(Buffer.from(json.result.substr(2), "hex"))
+    const value = deserializeCV(Buffer.from(json.result.slice(2), 'hex'))
     console.log("getTokenDecimals.value", value.value.value.toNumber())
 
     return value.value.value.toNumber()
@@ -129,12 +132,12 @@ export async function getTokenTotalSupply(token_principal) {
     },
     body: `{"sender":"${SWAPR_ADDRESS}","arguments":[]}`,
   }
-  const url = `${SIDECAR_URL}/v2/contracts/call-read/${address}/${name}/total-supply`
+  const url = `${SIDECAR_URL}/v2/contracts/call-read/${address}/${name}/get-total-supply`
   const result = await fetch(url, options)
   const json = await result.json()
   console.log("getTokenTotalSupply.result", json)
   if (json.okay) {
-    const value = deserializeCV(Buffer.from(json.result.substr(2), "hex"))
+    const value = deserializeCV(Buffer.from(json.result.slice(2), 'hex'))
     console.log("getTokenTotalSupply.value", value.value.value.toNumber())
 
     return value.value.value.toNumber()
@@ -154,10 +157,10 @@ export async function getPairCount() {
   const url = `${SIDECAR_URL}/v2/contracts/call-read/${SWAPR_ADDRESS}/${SWAPR_CONTRACT_NAME}/get-pair-count`
   const result = await fetch(url, options)
   const json = await result.json()
-  // console.log("getPairCount.result", json)
+  console.log("getPairCount.result", json)
   if (json.okay) {
-    const value = deserializeCV(Buffer.from(json.result.substr(2), "hex"))
-    // console.log("getPairCount.value", value.value.value.toNumber())
+    const value = deserializeCV(Buffer.from(json.result.slice(2), 'hex'))
+    console.log("getPairCount.value", value.value.value.toNumber())
 
     return value.value.value.toNumber()
   }
@@ -179,7 +182,7 @@ export async function getPairInfo(pair_id) {
   const json = await result.json()
   // console.log("getPairInfo.result", json)
   if (json.okay) {
-    const value = deserializeCV(Buffer.from(json.result.substr(2), "hex"))
+    const value = deserializeCV(Buffer.from(json.result.slice(2), 'hex'))
     // console.log("getPairInfo.value", value)
     const token_x = value.data['token-x']
     const token_y = value.data['token-y']
@@ -196,7 +199,7 @@ export async function getPairInfo(pair_id) {
     const result = await fetch(url, options)
     const json2 = await result.json()
     // console.log("getPairDetails.result", json2)
-    const value2 = deserializeCV(Buffer.from(json2.result.substr(2), "hex"))
+    const value2 = deserializeCV(Buffer.from(json2.result.slice(2), 'hex'))
     // console.log("getPairDetails.value", value2)
 
     return {
@@ -216,7 +219,7 @@ export async function getPairInfo(pair_id) {
 
 }
 
-export function checkDifferences(new_pairs, old_pairs) {
+export function checkPairDifferences(new_pairs, old_pairs) {
   for (let i = 0; i < new_pairs.pairs.length; i++) {
     const old_pair = old_pairs.pairs[i]
     const new_pair = new_pairs.pairs[i]
@@ -241,6 +244,23 @@ export function checkDifferences(new_pairs, old_pairs) {
     if (old_pair.id !== new_pair.id) {
       return false
     }
+  }
+  return true
+}
+
+export function checkTokenDifferences(new_tokens, old_tokens) {
+  for (let i = 0; i < new_tokens.tokens.length; i++) {
+    const old_token = old_tokens.tokens[i]
+    const new_token = new_tokens.tokens[i]
+    if (!old_token) {
+      return false
+    }
+    if (old_token.total_supply !== new_token.total_supply) {
+      return false
+    }
+    // TODO(psq): add price once available
+    // TODO(psq): add volume once available
+    // the rest shoudl be immutable
   }
   return true
 }

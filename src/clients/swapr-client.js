@@ -44,7 +44,7 @@ export async function getTokens(keys_sender, contract) {
   if (response.ok) {
     const result = await response.json()
     if (result.okay) {
-      const result_data = deserializeCV(Buffer.from(result.result.substr(2), "hex"))
+      const result_data = deserializeCV(Buffer.from(result.result.slice(2), 'hex'))
       console.log("result_data", result_data)
       return result_data.value.value
     } else {
@@ -71,7 +71,7 @@ export async function getPairs(keys_sender, contract) {
   if (response.ok) {
     const result = await response.json()
     if (result.okay) {
-      const result_data = deserializeCV(Buffer.from(result.result.substr(2), "hex"))
+      const result_data = deserializeCV(Buffer.from(result.result.slice(2), 'hex'))
       console.log("result_data", result_data)
       return result_data.value.value
     } else {
