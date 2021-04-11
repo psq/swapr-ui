@@ -10,10 +10,24 @@ import {
   standardPrincipalCV,
   uintCV,
 } from '@stacks/transactions'
+import {
+  useRecoilState,
+  useRecoilCallback,
+} from 'recoil'
 
 import {
   SIDECAR_URL,
 } from './StacksAccount'
+
+import {
+  pairList,
+  tokenList,
+  tokenFamily,
+  pairFamily,
+  tokenBalanceFamily,
+  pairBalanceFamily,
+  pairQuoteFamily,
+} from './atoms'
 
 const cvToHex = val => `"0x${serializeCV(val).toString('hex')}"`
 
@@ -34,7 +48,7 @@ function parseTokenPrincipal(token_principal) {
 export async function getTokenBalanceOf(token_principal, owner_principal) {
   const { address, name } = parseTokenPrincipal(token_principal)
   const options = {
-    method: "POST",
+    method: 'POST',
     headers: {
       "Content-Type": "application/json",
     },
@@ -57,7 +71,7 @@ export async function getTokenBalanceOf(token_principal, owner_principal) {
 export async function getTokenName(token_principal) {
   const { address, name } = parseTokenPrincipal(token_principal)
   const options = {
-    method: "POST",
+    method: 'POST',
     headers: {
       "Content-Type": "application/json",
     },
@@ -80,7 +94,7 @@ export async function getTokenName(token_principal) {
 export async function getTokenSymbol(token_principal) {
   const { address, name } = parseTokenPrincipal(token_principal)
   const options = {
-    method: "POST",
+    method: 'POST',
     headers: {
       "Content-Type": "application/json",
     },
@@ -103,7 +117,7 @@ export async function getTokenSymbol(token_principal) {
 export async function getTokenDecimals(token_principal) {
   const { address, name } = parseTokenPrincipal(token_principal)
   const options = {
-    method: "POST",
+    method: 'POST',
     headers: {
       "Content-Type": "application/json",
     },
@@ -126,7 +140,7 @@ export async function getTokenDecimals(token_principal) {
 export async function getTokenTotalSupply(token_principal) {
   const { address, name } = parseTokenPrincipal(token_principal)
   const options = {
-    method: "POST",
+    method: 'POST',
     headers: {
       "Content-Type": "application/json",
     },
@@ -146,9 +160,31 @@ export async function getTokenTotalSupply(token_principal) {
   return 'N/A'
 }
 
+export async function getTokenURI(token_principal) {
+  const { address, name } = parseTokenPrincipal(token_principal)
+  const options = {
+    method: 'POST',
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: `{"sender":"${SWAPR_ADDRESS}","arguments":[]}`,
+  }
+  const url = `${SIDECAR_URL}/v2/contracts/call-read/${address}/${name}/get-token-uri`
+  const result = await fetch(url, options)
+  const json = await result.json()
+  console.log("getTokenURI.result", json)
+  if (json.okay) {
+    const value = deserializeCV(Buffer.from(json.result.slice(2), 'hex'))
+    console.log("getTokenURI.value", value.value.value.data)
+    return value.value.value.data
+  }
+  console.log("getTokenTotalSupply: not okay")
+  return 'N/A'
+}
+
 export async function getPairCount() {
   const options = {
-    method: "POST",
+    method: 'POST',
     headers: {
       "Content-Type": "application/json",
     },
@@ -171,7 +207,7 @@ export async function getPairCount() {
 export async function getPairInfo(pair_id) {
   // console.log("getPairInfo", pair_id)
   const options = {
-    method: "POST",
+    method: 'POST',
     headers: {
       "Content-Type": "application/json",
     },
@@ -183,13 +219,13 @@ export async function getPairInfo(pair_id) {
   // console.log("getPairInfo.result", json)
   if (json.okay) {
     const value = deserializeCV(Buffer.from(json.result.slice(2), 'hex'))
-    // console.log("getPairInfo.value", value)
+    console.log("get-pair-contracts.value", value)
     const token_x = value.data['token-x']
     const token_y = value.data['token-y']
     // console.log("tokens", cvToString(token_x), cvToString(token_y))
 
     const options = {
-      method: "POST",
+      method: 'POST',
       headers: {
         "Content-Type": "application/json",
       },
@@ -219,107 +255,202 @@ export async function getPairInfo(pair_id) {
 
 }
 
-export function checkPairDifferences(new_pairs, old_pairs) {
-  for (let i = 0; i < new_pairs.pairs.length; i++) {
-    const old_pair = old_pairs.pairs[i]
-    const new_pair = new_pairs.pairs[i]
-    if (!old_pair) {
-      return false
-    }
-    if (old_pair.token_x_principal !== new_pair.token_x_principal) {
-      return false
-    }
-    if (old_pair.token_y_principal !== new_pair.token_y_principal) {
-      return false
-    }
-    if (old_pair.name !== new_pair.name) {
-      return false
-    }
-    if (old_pair.swapr_token_principal !== new_pair.swapr_token_principal) {
-      return false
-    }
-    if (!old_pair.shares_total.eq(new_pair.shares_total)) {
-      return false
-    }
-    if (old_pair.id !== new_pair.id) {
-      return false
-    }
+// export function checkPairDifferences(new_pairs, old_pairs) {
+//   for (let i = 0; i < new_pairs.pairs.length; i++) {
+//     const old_pair = old_pairs.pairs[i]
+//     const new_pair = new_pairs.pairs[i]
+//     if (!old_pair) {
+//       return false
+//     }
+//     if (old_pair.token_x_principal !== new_pair.token_x_principal) {
+//       return false
+//     }
+//     if (old_pair.token_y_principal !== new_pair.token_y_principal) {
+//       return false
+//     }
+//     if (old_pair.name !== new_pair.name) {
+//       return false
+//     }
+//     if (old_pair.swapr_token_principal !== new_pair.swapr_token_principal) {
+//       return false
+//     }
+//     if (!old_pair.shares_total.eq(new_pair.shares_total)) {
+//       return false
+//     }
+//     if (old_pair.id !== new_pair.id) {
+//       return false
+//     }
+//   }
+//   return true
+// }
+
+// export function checkTokenDifferences(new_tokens, old_tokens) {
+//   for (let i = 0; i < new_tokens.tokens.length; i++) {
+//     const old_token = old_tokens.tokens[i]
+//     const new_token = new_tokens.tokens[i]
+//     if (!old_token) {
+//       return false
+//     }
+//     if (old_token.total_supply !== new_token.total_supply) {
+//       return false
+//     }
+//     // TODO(psq): add price once available
+//     // TODO(psq): add volume once available
+//     // the rest shoudl be immutable
+//   }
+//   return true
+// }
+
+// async function updatePairs(dispatch) {
+//   const count = await getPairCount()
+//   const pairs = []
+//   const tokens = {}
+//   for (let pair_id = 0; pair_id < count; pair_id++) {
+//     const pair = await getPairInfo(pair_id + 1)
+//     pairs[pair_id] = pair
+//     if (!tokens[pair.token_x_principal]) {
+//       tokens[pair.token_x_principal] = {
+//         type: 'token',
+//         principal: pair.token_x_principal
+//       }
+//     }
+//     if (!tokens[pair.token_y_principal]) {
+//       tokens[pair.token_y_principal] = {
+//         type: 'token',
+//         principal: pair.token_y_principal
+//       }
+//     }
+//     if (!tokens[pair.swapr_token_principal]) {
+//       tokens[pair.swapr_token_principal] = {
+//         type: 'token',
+//         principal: pair.swapr_token_principal
+//       }
+//     }
+//     console.log("get token info", tokens)
+//     Object.keys(tokens).forEach(async k => {
+//       const token = tokens[k]
+//       token.name = await getTokenName(token.principal)
+//       token.symbol = await getTokenSymbol(token.principal)
+//       token.decimals = await getTokenDecimals(token.principal)
+//       token.total_supply = await getTokenTotalSupply(token.principal)
+//       console.log("token", token)
+//     })
+
+//   }
+
+//   // TODO(psq):
+//   // also get more token information: name, symbol, contract, decimals, total-supply, balance-of(user if logged in)
+//   // hopefully, read-only calls can work now, or make them read-only
+//   // build token list in redux
+//   // check user's pair balance as well: balance-of swapr token if logged in, get-balances(token-x, token-y)
+//   // that's a lot of calls (maybe caching to local storage would help?)
+
+
+//   dispatch({type: 'set_tokens', tokens})
+//   dispatch({type: 'set_pairs', pairs})
+// }
+
+
+// TODO(psq):
+// also get more token information: name, symbol, contract, decimals, total-supply, balance-of(user if logged in)
+// hopefully, read-only calls can work now, or make them read-only
+// build token list in redux
+// check user's pair balance as well: balance-of swapr token if logged in, get-balances(token-x, token-y)
+// that's a lot of calls (maybe caching to local storage would help?)
+
+// export async function useUpdatePairs(dispatch) {
+//   useEffect(() => {
+//     updatePairs(dispatch)
+//     const id = setInterval(() => updatePairs(dispatch), 10000)
+//     return () => { clearInterval(id) }
+//   }, [dispatch])
+// }
+
+export async function getTokenMetadata(uri) {
+  const options = {
+    method: 'GET',
+    mode: 'cors',
+    headers: {
+      "Content-Type": "application/json",
+    },
   }
-  return true
+  const url = `${uri}`
+  const result = await fetch(url, options)
+  const json = await result.json()
+  console.log("getTokenMetadata", uri, json)
+  return json
 }
 
-export function checkTokenDifferences(new_tokens, old_tokens) {
-  for (let i = 0; i < new_tokens.tokens.length; i++) {
-    const old_token = old_tokens.tokens[i]
-    const new_token = new_tokens.tokens[i]
-    if (!old_token) {
-      return false
-    }
-    if (old_token.total_supply !== new_token.total_supply) {
-      return false
-    }
-    // TODO(psq): add price once available
-    // TODO(psq): add volume once available
-    // the rest shoudl be immutable
-  }
-  return true
-}
+export async function useUpdatePairsRecoil() {
+  const updatePairsAndTokens = useRecoilCallback(({snapshot, set}) => async () => {
+    console.log("useRecoilCallback.snapshot", snapshot)
 
-async function updatePairs (dispatch) {
+    const pair_list = []
+    const retrieved_tokens = {}
+    const token_list = []
+
     const count = await getPairCount()
-    const pairs = []
-    const tokens = {}
-    for (let pair_id = 0; pair_id < count; pair_id++) {
-      const pair = await getPairInfo(pair_id + 1)
-      pairs[pair_id] = pair
-      if (!tokens[pair.token_x_principal]) {
-        tokens[pair.token_x_principal] = {
+    console.log("count", count)
+    for (let pair_idx = 0; pair_idx < count; pair_idx++) {
+      const pair = await getPairInfo(pair_idx + 1)
+      const pair_id = `${pair.token_x_principal}$${pair.token_y_principal}`
+      set(pairFamily(pair_id), pair)
+      pair_list.push(pair_id)
+
+      if (!retrieved_tokens[pair.token_x_principal]) {
+        retrieved_tokens[pair.token_x_principal] = {
           type: 'token',
           principal: pair.token_x_principal
         }
       }
-      if (!tokens[pair.token_y_principal]) {
-        tokens[pair.token_y_principal] = {
+      if (!retrieved_tokens[pair.token_y_principal]) {
+        retrieved_tokens[pair.token_y_principal] = {
           type: 'token',
           principal: pair.token_y_principal
         }
       }
-      if (!tokens[pair.swapr_token_principal]) {
-        tokens[pair.swapr_token_principal] = {
+      if (!retrieved_tokens[pair.swapr_token_principal]) {
+        retrieved_tokens[pair.swapr_token_principal] = {
           type: 'token',
           principal: pair.swapr_token_principal
         }
       }
-      console.log("get token info", tokens)
-      Object.keys(tokens).forEach(async k => {
-        const token = tokens[k]
-        token.name = await getTokenName(token.principal)
-        token.symbol = await getTokenSymbol(token.principal)
-        token.decimals = await getTokenDecimals(token.principal)
-        token.total_supply = await getTokenTotalSupply(token.principal)
-        console.log("token", token)
-      })
+      const keys = Object.keys(retrieved_tokens)
+      console.log("get token info", keys)
+      for (let key of keys) {
+        const token = retrieved_tokens[key]
+        console.log("retrieving information about", token.principal)
+        const uri = await getTokenURI(token.principal)
 
+        const full_token = {
+          type: token.type,
+          principal: token.principal,
+          name: await getTokenName(token.principal),
+          symbol: await getTokenSymbol(token.principal),
+          decimals: await getTokenDecimals(token.principal),
+          total_supply: await getTokenTotalSupply(token.principal),
+          uri,
+          metadata: await getTokenMetadata(uri),
+        }
+
+        token_list.push(full_token.principal)
+        console.log("full_token", full_token)
+
+        set(tokenFamily(token.principal), full_token)
+      }
     }
 
-    // TODO(psq):
-    // also get more token information: name, symbol, contract, decimals, total-supply, balance-of(user if logged in)
-    // hopefully, read-only calls can work now, or make them read-only
-    // build token list in redux
-    // check user's pair balance as well: balance-of swapr token if logged in, get-balances(token-x, token-y)
-    // that's a lot of calls (maybe caching to local storage would help?)
+    const token_list_sorted = token_list.sort((a, b) => a.localeCompare(b))
+    console.log(token_list_sorted)
 
+    set(pairList, pair_list);
+    set(tokenList, token_list_sorted);
+  })
 
-    dispatch({type: 'set_tokens', tokens})
-    dispatch({type: 'set_pairs', pairs})
-  }
-
-export async function useUpdatePairs(dispatch) {
   useEffect(() => {
-    updatePairs(dispatch)
-    const id = setInterval(() => updatePairs(dispatch), 10000)
+    updatePairsAndTokens()
+    const id = setInterval(() => updatePairsAndTokens(), 60000)
     return () => { clearInterval(id) }
-  }, [dispatch])
+  }, [/*updatePairsAndTokens*/])
 }
-
 

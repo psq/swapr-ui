@@ -1,22 +1,58 @@
 import React, { /* useContext, */ } from 'react'
 import { useParams } from "react-router-dom"
 import { Link } from "react-router-dom"
+import { useRecoilState } from 'recoil'
 
-// import { AppContext } from './AppContext'
+import {
+  useUpdatePairsRecoil,
+} from './swapr'
+
+import {
+  pairList,
+  tokenList,
+  tokenFamily,
+  pairFamily,
+  tokenBalanceFamily,
+  pairBalanceFamily,
+  pairQuoteFamily,
+} from './atoms'
 
 export default function Pair (props) {
   // const context = useContext(AppContext)
   let { pairId } = useParams()
-  console.log("Pair", pairId)
-  const tokens = pairId.split('-')
+  console.log(">>> Pair", pairId)
+
+  const [pair, setPair] = useRecoilState(pairFamily(pairId))
+  const [token_x, setTokenX] = useRecoilState(tokenFamily(pair.token_x_principal))
+  const [token_y, setTokenY] = useRecoilState(tokenFamily(pair.token_y_principal))
+  const [token_swapr, setTokenySwape] = useRecoilState(tokenFamily(pair.swapr_token_principal))
+  useUpdatePairsRecoil()
+
+  console.log("pair", pair)
+  console.log("token_x", token_x)
+  console.log("token_y", token_y)
+  console.log("token_swapr", token_swapr)
+
+  if (!pair || !token_x || !token_y || !token_x.metadata || !token_y.metadata) {
+    return "loading..."
+  }
+
   return (
     <div className="Pair">
-      <h1>{pairId}</h1>
-      <ul>
-        {
-          tokens.map(token => (<li key={token}><Link to={`/token/${token}`}>{token}</Link></li>))
-        }
-      </ul>
+      <h1><img style={{width: "60px", height: "50px", paddingRight: "10px", zIndex: 1000}} src={token_x.metadata.vector} alt="Token icon"/><img style={{width: "60px", height: "50px", paddingRight: "10px", marginLeft: "-30px", zIndex: 1100}} src={token_y.metadata.vector} alt="Token icon"/>{pair.name} Pair</h1>
+      <p>X Token: <Link to={`/token/${token_x.principal}`}>{token_x.name} ({token_x.symbol})</Link></p>
+      <p>Y Token: <Link to={`/token/${token_y.principal}`}>{token_y.name} ({token_y.symbol})</Link></p>
+      <p>swapr Token: <Link to={`/token/${token_swapr.principal}`}>{token_swapr.name} ({token_swapr.symbol})</Link></p>
+
+      <p>{token_x.name} balance: TBD </p>
+      <p>{token_y.name} balance: TBD </p>
+      <p>Exchange rate: TBD</p>
+
+      <div>
+        <h4>Swap here</h4>
+        <h4>Add Liquidity here</h4>
+        <h4>Remove Liquidity here</h4>
+      </div>
 
       {/*
         get token pair list from contract

@@ -1,34 +1,55 @@
 import React, { /*useContext, useEffect, useState*/ } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { Link } from "react-router-dom"
-
-// import { AppContext } from './AppContext'
+import { useRecoilState } from 'recoil'
 
 import {
-  checkPairDifferences,
-  useUpdatePairs,
+  // checkPairDifferences,
+  // useUpdatePairs,
+  useUpdatePairsRecoil,
 } from './swapr'
 
-export default function Pairs (props) {
+import {
+  pairList,
+  tokenList,
+  tokenFamily,
+  pairFamily,
+  tokenBalanceFamily,
+  pairBalanceFamily,
+  pairQuoteFamily,
+} from './atoms'
+
+
+function PairInfo(props) {
+  const id = props.id
+  const [pair, setPair] = useRecoilState(pairFamily(id))
+  console.log(">>> PairInfo", id, pair)
+  return <li key={pair.id}>
+    <Link to={`/pair/${id}`}>{pair.name}</Link>
+  </li>
+}
+
+export default function Pairs(props) {
   // const context = useContext(AppContext)
 
-  const dispatch = useDispatch()
-  const { pairs } = useSelector(state => state.pairs, (item, previous) => {
-    return checkPairDifferences(item, previous)
-  })
-  useUpdatePairs(dispatch)
-  console.log("Exchange", pairs)
+  // const dispatch = useDispatch()
+  // const { pairs } = useSelector(state => state.pairs, (item, previous) => {
+  //   return checkPairDifferences(item, previous)
+  // })
+  // useUpdatePairs(dispatch)
+
+  const [pairs, setPairs] = useRecoilState(pairList)
+  useUpdatePairsRecoil()
+  console.log(">>> Pairs", pairs)
 
   return (
     <div className="Pairs">
       <h1>Pairs</h1>
-        Pairs: {pairs.length}
+        Count: {pairs.length}
         <ul>
           {
-            pairs.map(pair => {
-              return <li key={pair.id}>
-                <Link to={`/pair/${pair.token_x_principal}$${pair.token_y_principal}`}>{pair.name}</Link>
-              </li>
+            pairs.map(pair_id => {
+              return <PairInfo key={pair_id} id={pair_id}/>
             })
           }
         </ul>

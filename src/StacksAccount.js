@@ -11,7 +11,6 @@ import {
 } from '@stacks/transactions'
 
 
-import { balanceOf as wraprBalanceOf } from './clients/wrapr-client'
 import {
   getAuthOrigin,
 } from './utils'
@@ -75,20 +74,20 @@ export function useUpdateSTX(sender, dispatch, current_stx_balance) {
   }, [sender, dispatch, current_stx_balance])
 }
 
-export function useUpdateWRAPR(sender, dispatch, current_wrapr_balance) {
-  useEffect(() => {
-    const id = setInterval(async () => {
-      try {
-        const wrapr_balance = await wraprBalanceOf(sender, sender, WRAPR_CONTRACT)
-        // console.log("wrapr_balance", wrapr_balance)
-        if (current_wrapr_balance === null || !current_wrapr_balance.eq(wrapr_balance)) {
-          dispatch({type: 'set_wrapr', wrapr_balance})
-        }
-      } catch(e) {
-        console.log("error retrieving wrapr balance", e.message)
-      }
-    }, 2500)
-    return () => { clearInterval(id) }
-  }, [sender, dispatch, current_wrapr_balance])
-}
+// export function useUpdateWRAPR(sender, dispatch, current_wrapr_balance) {
+//   useEffect(() => {
+//     const id = setInterval(async () => {
+//       try {
+//         const wrapr_balance = await wraprBalanceOf(sender, sender, WRAPR_CONTRACT)
+//         // console.log("wrapr_balance", wrapr_balance)
+//         if (current_wrapr_balance === null || !current_wrapr_balance.eq(wrapr_balance)) {
+//           dispatch({type: 'set_wrapr', wrapr_balance})
+//         }
+//       } catch(e) {
+//         console.log("error retrieving wrapr balance", e.message)
+//       }
+//     }, 2500)
+//     return () => { clearInterval(id) }
+//   }, [sender, dispatch, current_wrapr_balance])
+// }
 

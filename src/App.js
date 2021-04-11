@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux'
 
 import { AppConfig, UserSession } from '@stacks/connect'
 import { Connect } from '@stacks/connect-react'
-
+import { RecoilRoot } from 'recoil'
 import { CContainer, CFade } from '@coreui/react'
 
 import './scss/style.scss'
@@ -198,11 +198,13 @@ export default function App(props) {
     <div className="App">
       <AppContext.Provider value={state}>
         <Connect authOptions={authOptions}>
-          <Router>
-            {/*authResponse && <input type="hidden" id="auth-response" value={authResponse} />*/}
-            {/*appPrivateKey && <input type="hidden" id="app-private-key" value={appPrivateKey} />*/}
-            <Layout />
-          </Router>
+          <RecoilRoot>
+            <Router>
+              {/*authResponse && <input type="hidden" id="auth-response" value={authResponse} />*/}
+              {/*appPrivateKey && <input type="hidden" id="app-private-key" value={appPrivateKey} />*/}
+              <Layout />
+            </Router>
+           </RecoilRoot>
         </Connect>
       </AppContext.Provider>
     </div>

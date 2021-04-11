@@ -1,16 +1,39 @@
 import React, { /* useContext, */ } from 'react'
-import { useParams } from "react-router-dom"
+import { Link, useParams } from "react-router-dom"
+import { useRecoilState } from 'recoil'
 
-// import { AppContext } from './AppContext'
+import {
+  useUpdatePairsRecoil,
+} from './swapr'
+
+import {
+  pairList,
+  tokenList,
+  tokenFamily,
+  pairFamily,
+  tokenBalanceFamily,
+  pairBalanceFamily,
+  pairQuoteFamily,
+} from './atoms'
 
 export default function Token(props) {
   // const context = useContext(AppContext)
   let { tokenId } = useParams()
-  console.log("Token", tokenId)
+  const [token, setToken] = useRecoilState(tokenFamily(tokenId))
+  useUpdatePairsRecoil()
+  console.log(">>> Token", tokenId, token)
+
+  if (!token || !token.metadata) return "loading..."
 
   return (
     <div className="Token">
-      <h1>{tokenId}</h1>
+      <h1><img style={{width: "60px", height: "50px", paddingRight: "10px"}} src={token.metadata.vector} alt="Token icon"/>{token.name} Token</h1>
+      <p>Description: {token.metadata.description}</p>
+      <p>Symbol: {token.symbol}</p>
+      <p>Decimals: {token.decimals}</p>
+      <p>Supply: {token.total_supply}</p>
+      <p>Metadata URI: <a href={token.uri}>{token.uri}</a></p>
+
       {/*
         get token pair list from contract
         pick pair

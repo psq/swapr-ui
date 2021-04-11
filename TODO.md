@@ -1,4 +1,18 @@
 TODOs
+
+- recoil + recoil-persist experiment
+  - pair list
+  - token list
+  - token balances
+  - pair balances
+  - pair exchange rate
+  - token price (what's the reference?)
+
+- change token/pair urls to use token principal, pair principals
+- add 1 more token (nothing?)
+- add 1 more pair (STX-nothing)
+- add 1 more pair (Plaid-nothing)
+
 - port new html for main functionality (poo/swap, and will need posisbly more designs)
 - change swapr to use purple boat instead of text logo?
 - deploy plaid-token on mocknet
