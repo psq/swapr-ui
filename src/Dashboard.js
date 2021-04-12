@@ -73,7 +73,7 @@ function PairInfo(props) {
       <img style={{width: "45px", height: "35px", paddingTop: '3px', paddingBottom: '3px', paddingRight: "10px", marginLeft: "-22px", zIndex: 1100}} src={token_y.metadata.vector} alt="Token icon"/>
       {pair.name}:&nbsp;
       {(new BigNum(token_swapr_balance)).toNumber() / 10**token_swapr.decimals}&nbsp;-&nbsp;
-      {((new BigNum(token_swapr_balance)).toNumber() / (new BigNum(pair.pair_shares_total)).toNumber() * 100).toFixed(2)}%
+      {((new BigNum(token_swapr_balance)).toNumber() / (new BigNum(pair.pair_shares_total)).toNumber() * 100).toFixed(2)}% of pool
     </Link>
   </li>
 }

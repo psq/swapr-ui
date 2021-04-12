@@ -47,8 +47,8 @@ export default function Pair (props) {
       <p>swapr Token: <Link to={`/token/${token_swapr.principal}`}>{token_swapr.name} ({token_swapr.symbol})</Link></p>
 
       <p>{token_x.name} balance: {(new BigNum(pair_balances.balance_x)).toNumber() / 10**token_x.decimals} </p>
-      <p>{token_y.name} balance: {(new BigNum(pair_balances.balance_y)).toNumber() / 10**token_x.decimals} </p>
-      <p>Exchange rate: {((new BigNum(pair_balances.balance_x)).toNumber() / (new BigNum(pair_balances.balance_y)).toNumber()).toFixed(6) }</p>
+      <p>{token_y.name} balance: {(new BigNum(pair_balances.balance_y)).toNumber() / 10**token_y.decimals} </p>
+      <p>Exchange rate: {((new BigNum(pair_balances.balance_y)).toNumber() / (new BigNum(pair_balances.balance_x)).toNumber()).toFixed(6) * 10**(token_x.decimals - token_y.decimals) }</p>
       <p>Shares: {(new BigNum(pair.pair_shares_total)).toNumber() / 10**token_swapr.decimals}</p>
 
       <div>
