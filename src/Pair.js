@@ -1,3 +1,4 @@
+import BigNum from 'bn.js'
 import React, { /* useContext, */ } from 'react'
 import { useParams } from "react-router-dom"
 import { Link } from "react-router-dom"
@@ -23,6 +24,7 @@ export default function Pair (props) {
   console.log(">>> Pair", pairId)
 
   const [pair, setPair] = useRecoilState(pairFamily(pairId))
+  const [pair_balances] = useRecoilState(pairBalanceFamily(pairId))
   const [token_x, setTokenX] = useRecoilState(tokenFamily(pair.token_x_principal))
   const [token_y, setTokenY] = useRecoilState(tokenFamily(pair.token_y_principal))
   const [token_swapr, setTokenySwape] = useRecoilState(tokenFamily(pair.swapr_token_principal))
@@ -44,9 +46,10 @@ export default function Pair (props) {
       <p>Y Token: <Link to={`/token/${token_y.principal}`}>{token_y.name} ({token_y.symbol})</Link></p>
       <p>swapr Token: <Link to={`/token/${token_swapr.principal}`}>{token_swapr.name} ({token_swapr.symbol})</Link></p>
 
-      <p>{token_x.name} balance: TBD </p>
-      <p>{token_y.name} balance: TBD </p>
-      <p>Exchange rate: TBD</p>
+      <p>{token_x.name} balance: {(new BigNum(pair_balances.balance_x)).toNumber() / 10**token_x.decimals} </p>
+      <p>{token_y.name} balance: {(new BigNum(pair_balances.balance_y)).toNumber() / 10**token_x.decimals} </p>
+      <p>Exchange rate: {((new BigNum(pair_balances.balance_x)).toNumber() / (new BigNum(pair_balances.balance_y)).toNumber()).toFixed(6) }</p>
+      <p>Shares: {(new BigNum(pair.pair_shares_total)).toNumber() / 10**token_swapr.decimals}</p>
 
       <div>
         <h4>Swap here</h4>

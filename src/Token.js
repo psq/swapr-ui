@@ -31,8 +31,8 @@ export default function Token(props) {
       <p>Description: {token.metadata.description}</p>
       <p>Symbol: {token.symbol}</p>
       <p>Decimals: {token.decimals}</p>
-      <p>Supply: {token.total_supply}</p>
-      <p>Metadata URI: <a href={token.uri}>{token.uri}</a></p>
+      <p>Supply: {token.total_supply / 10**token.decimals}</p>
+      <p>Metadata URI: <a href={token.uri}>{token.uri.length !== 0 ? token.uri : 'N/A'}</a></p>
 
       {/*
         get token pair list from contract

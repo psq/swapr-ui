@@ -8,6 +8,7 @@ import {
   serializeCV,
 
   cvToString,
+  contractPrincipalCV,
   standardPrincipalCV,
   uintCV,
 } from '@stacks/transactions'
@@ -207,6 +208,60 @@ export async function getPairCount() {
   return 0
 }
 
+export async function getPairBalances(token_x_id, token_y_id) {
+  console.log("getPairBalances", token_x_id, token_y_id)
+  const [token_x_addr, token_x_contract_name] = token_x_id.split('.')
+  const [token_y_addr, token_y_contract_name] = token_y_id.split('.')
+  console.log(token_x_addr, token_x_contract_name, token_y_addr, token_y_contract_name)
+  const options = {
+    method: 'POST',
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: `{"sender":"${SWAPR_ADDRESS}","arguments":[${cvToHex(contractPrincipalCV(token_x_addr, token_x_contract_name))},${cvToHex(contractPrincipalCV(token_y_addr, token_y_contract_name))}]}`,
+  }
+  const url = `${SIDECAR_URL}/v2/contracts/call-read/${SWAPR_ADDRESS}/${SWAPR_CONTRACT_NAME}/get-balances`
+  const result = await fetch(url, options)
+  const json = await result.json()
+  // console.log("getPairBalances.result", json)
+  if (json.okay) {
+    const value = deserializeCV(Buffer.from(json.result.slice(2), 'hex'))
+    console.log("getPairBalances.value", value)
+    return {
+      balance_x: value.value.list[0].value.toString(),  // beware the recoil-persit serialization
+      balance_y: value.value.list[1].value.toString(),
+    }
+
+  }
+  console.log("getPairBalances: not okay")
+  return null
+}
+
+export async function getPairShares(token_x_id, token_y_id) {
+  console.log("getPairBalances", token_x_id, token_y_id)
+  const [token_x_addr, token_x_contract_name] = token_x_id.split('.')
+  const [token_y_addr, token_y_contract_name] = token_y_id.split('.')
+  console.log(token_x_addr, token_x_contract_name, token_y_addr, token_y_contract_name)
+  const options = {
+    method: 'POST',
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: `{"sender":"${SWAPR_ADDRESS}","arguments":[${cvToHex(contractPrincipalCV(token_x_addr, token_x_contract_name))},${cvToHex(contractPrincipalCV(token_y_addr, token_y_contract_name))}]}`,
+  }
+  const url = `${SIDECAR_URL}/v2/contracts/call-read/${SWAPR_ADDRESS}/${SWAPR_CONTRACT_NAME}/get-shares`
+  const result = await fetch(url, options)
+  const json = await result.json()
+  // console.log("getPairShares.result", json)
+  if (json.okay) {
+    const value = deserializeCV(Buffer.from(json.result.slice(2), 'hex'))
+    console.log("getPairShares.value", value)
+    return value.value.value.toString()  // beware the recoil-persit serialization
+  }
+  console.log("getPairShares: not okay")
+  return null
+}
+
 export async function getPairInfo(pair_id) {
   // console.log("getPairInfo", pair_id)
   const options = {
@@ -255,119 +310,7 @@ export async function getPairInfo(pair_id) {
   }
   console.log("getPairInfo: not okay")
   return null
-
 }
-
-// export function checkPairDifferences(new_pairs, old_pairs) {
-//   for (let i = 0; i < new_pairs.pairs.length; i++) {
-//     const old_pair = old_pairs.pairs[i]
-//     const new_pair = new_pairs.pairs[i]
-//     if (!old_pair) {
-//       return false
-//     }
-//     if (old_pair.token_x_principal !== new_pair.token_x_principal) {
-//       return false
-//     }
-//     if (old_pair.token_y_principal !== new_pair.token_y_principal) {
-//       return false
-//     }
-//     if (old_pair.name !== new_pair.name) {
-//       return false
-//     }
-//     if (old_pair.swapr_token_principal !== new_pair.swapr_token_principal) {
-//       return false
-//     }
-//     if (!old_pair.shares_total.eq(new_pair.shares_total)) {
-//       return false
-//     }
-//     if (old_pair.id !== new_pair.id) {
-//       return false
-//     }
-//   }
-//   return true
-// }
-
-// export function checkTokenDifferences(new_tokens, old_tokens) {
-//   for (let i = 0; i < new_tokens.tokens.length; i++) {
-//     const old_token = old_tokens.tokens[i]
-//     const new_token = new_tokens.tokens[i]
-//     if (!old_token) {
-//       return false
-//     }
-//     if (old_token.total_supply !== new_token.total_supply) {
-//       return false
-//     }
-//     // TODO(psq): add price once available
-//     // TODO(psq): add volume once available
-//     // the rest shoudl be immutable
-//   }
-//   return true
-// }
-
-// async function updatePairs(dispatch) {
-//   const count = await getPairCount()
-//   const pairs = []
-//   const tokens = {}
-//   for (let pair_id = 0; pair_id < count; pair_id++) {
-//     const pair = await getPairInfo(pair_id + 1)
-//     pairs[pair_id] = pair
-//     if (!tokens[pair.token_x_principal]) {
-//       tokens[pair.token_x_principal] = {
-//         type: 'token',
-//         principal: pair.token_x_principal
-//       }
-//     }
-//     if (!tokens[pair.token_y_principal]) {
-//       tokens[pair.token_y_principal] = {
-//         type: 'token',
-//         principal: pair.token_y_principal
-//       }
-//     }
-//     if (!tokens[pair.swapr_token_principal]) {
-//       tokens[pair.swapr_token_principal] = {
-//         type: 'token',
-//         principal: pair.swapr_token_principal
-//       }
-//     }
-//     console.log("get token info", tokens)
-//     Object.keys(tokens).forEach(async k => {
-//       const token = tokens[k]
-//       token.name = await getTokenName(token.principal)
-//       token.symbol = await getTokenSymbol(token.principal)
-//       token.decimals = await getTokenDecimals(token.principal)
-//       token.total_supply = await getTokenTotalSupply(token.principal)
-//       console.log("token", token)
-//     })
-
-//   }
-
-//   // TODO(psq):
-//   // also get more token information: name, symbol, contract, decimals, total-supply, balance-of(user if logged in)
-//   // hopefully, read-only calls can work now, or make them read-only
-//   // build token list in redux
-//   // check user's pair balance as well: balance-of swapr token if logged in, get-balances(token-x, token-y)
-//   // that's a lot of calls (maybe caching to local storage would help?)
-
-
-//   dispatch({type: 'set_tokens', tokens})
-//   dispatch({type: 'set_pairs', pairs})
-// }
-
-
-// TODO(psq):
-// also get more token information: name, symbol, contract, decimals, total-supply, balance-of(user if logged in)
-// hopefully, read-only calls can work now, or make them read-only
-// build token list in redux
-// check user's pair balance as well: balance-of swapr token if logged in, get-balances(token-x, token-y)
-// that's a lot of calls (maybe caching to local storage would help?)
-
-// export async function useUpdatePairs(dispatch) {
-//   useEffect(() => {
-//     updatePairs(dispatch)
-//     const id = setInterval(() => updatePairs(dispatch), 10000)
-//     return () => { clearInterval(id) }
-//   }, [dispatch])
-// }
 
 export async function getTokenMetadata(uri) {
   if (uri.length === 0) {
@@ -407,9 +350,14 @@ export async function useUpdatePairsRecoil() {
     console.log("count", count)
     for (let pair_idx = 0; pair_idx < count; pair_idx++) {
       const pair = await getPairInfo(pair_idx + 1)
+      const pair_shares_total = await getPairShares(pair.token_x_principal, pair.token_y_principal)
+
       const pair_id = `${pair.token_x_principal}$${pair.token_y_principal}`
-      set(pairFamily(pair_id), pair)
-      pair_list.push(pair_id)
+      set(pairFamily(pair_id), {...pair, pair_shares_total})
+      pair_list.push({
+        id: pair_id,
+        name: pair.name,
+      })
 
       if (!retrieved_tokens[pair.token_x_principal]) {
         retrieved_tokens[pair.token_x_principal] = {
@@ -429,36 +377,43 @@ export async function useUpdatePairsRecoil() {
           principal: pair.swapr_token_principal
         }
       }
-      const keys = Object.keys(retrieved_tokens)
-      console.log("get token info", keys)
-      for (let key of keys) {
-        const token = retrieved_tokens[key]
-        console.log("retrieving information about", token.principal)
-        const uri = await getTokenURI(token.principal)
-
-        const full_token = {
-          type: token.type,
-          principal: token.principal,
-          name: await getTokenName(token.principal),
-          symbol: await getTokenSymbol(token.principal),
-          decimals: await getTokenDecimals(token.principal),
-          total_supply: await getTokenTotalSupply(token.principal),
-          uri,
-          metadata: await getTokenMetadata(uri),
-        }
-
-        token_list.push(full_token.principal)
-        console.log("full_token", full_token)
-
-        set(tokenFamily(token.principal), full_token)
-
-        // recoil persit does not persit BigNum correctly,
-        set(tokenBalanceFamily(token.principal), (await getTokenBalanceOf(token.principal, account_address)).toString())
-      }
+      const pair_balances = await getPairBalances(pair.token_x_principal, pair.token_y_principal)
+      console.log("pair_balances", pair_id, pair_balances)
+      set(pairBalanceFamily(pair_id), pair_balances)
     }
 
-    const token_list_sorted = token_list.sort((a, b) => a.localeCompare(b))
-    console.log(token_list_sorted)
+    const keys = Object.keys(retrieved_tokens)
+    console.log("get token info", keys)
+    for (let key of keys) {
+      const token = retrieved_tokens[key]
+      console.log("retrieving information about", token.principal)
+      const uri = await getTokenURI(token.principal)
+
+      const full_token = {
+        type: token.type,
+        principal: token.principal,
+        name: await getTokenName(token.principal),
+        symbol: await getTokenSymbol(token.principal),
+        decimals: await getTokenDecimals(token.principal),
+        total_supply: await getTokenTotalSupply(token.principal),
+        uri,
+        metadata: await getTokenMetadata(uri),
+      }
+
+      token_list.push({
+        id: full_token.principal,
+        name: full_token.name,
+      })
+      console.log("full_token", full_token)
+
+      set(tokenFamily(token.principal), full_token)
+
+      // recoil persit does not persit BigNum correctly,
+      set(tokenBalanceFamily(token.principal), (await getTokenBalanceOf(token.principal, account_address)).toString())
+    }
+
+    const token_list_sorted = token_list.sort((a, b) => a.name.localeCompare(b.name))
+    console.log("token_list_sorted", token_list_sorted)
 
     set(pairList, pair_list);
     set(tokenList, token_list_sorted);

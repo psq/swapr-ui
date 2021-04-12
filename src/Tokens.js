@@ -23,7 +23,8 @@ function TokenInfo(props) {
   console.log(">>> TokenInfo", id, token)
   if (!token || !token.metadata) return "loading..."
   return <li style={{listStyleType: 'none'}} key={token.id}>
-    <Link to={`/token/${id}`}><img style={{width: "45px", height: "35px", paddingRight: "10px"}} src={token.metadata.vector} alt="Token icon"/>{token.name}</Link>
+    <Link to={`/token/${id}`}>
+    <img style={{width: "50px", height: "40px", paddingTop: '3px', paddingBottom: '3px', paddingRight: "10px"}} src={token.metadata.vector} alt="Token icon"/>{token.name}</Link>
   </li>
 }
 
@@ -43,8 +44,8 @@ export default function Tokens (props) {
         Count: {tokens.length}
         <ul>
           {
-            tokens.map(token_id => {
-              return <TokenInfo key={token_id} id={token_id}/>
+            tokens.map(token => {
+              return <TokenInfo key={token.id} id={token.id}/>
             })
           }
         </ul>

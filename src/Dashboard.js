@@ -62,7 +62,8 @@ function PairInfo(props) {
 
   const [token_x] = useRecoilState(tokenFamily(pair.token_x_principal))
   const [token_y] = useRecoilState(tokenFamily(pair.token_y_principal))
-
+  const [token_swapr] = useRecoilState(tokenFamily(pair.swapr_token_principal))
+  const [token_swapr_balance] = useRecoilState(tokenBalanceFamily(pair.swapr_token_principal))
 
   console.log(">>> PairInfo", id, pair, pair_balance, token_x, token_y)
   if (!pair || /*!pair_balance ||*/ !token_x || !token_y || !token_x.metadata || !token_y.metadata) return "loading..."
@@ -70,7 +71,9 @@ function PairInfo(props) {
     <Link to={`/pair/${id}`}>
       <img style={{width: "45px", height: "35px", paddingTop: '3px', paddingBottom: '3px', paddingRight: "10px", zIndex: 1000}} src={token_x.metadata.vector} alt="Token icon"/>
       <img style={{width: "45px", height: "35px", paddingTop: '3px', paddingBottom: '3px', paddingRight: "10px", marginLeft: "-22px", zIndex: 1100}} src={token_y.metadata.vector} alt="Token icon"/>
-      {pair.name}
+      {pair.name}:&nbsp;
+      {(new BigNum(token_swapr_balance)).toNumber() / 10**token_swapr.decimals}&nbsp;-&nbsp;
+      {((new BigNum(token_swapr_balance)).toNumber() / (new BigNum(pair.pair_shares_total)).toNumber() * 100).toFixed(2)}%
     </Link>
   </li>
 }
@@ -96,9 +99,8 @@ export default function Main(props) {
 
   const [tokens] = useRecoilState(tokenList)
   const [pairs] = useRecoilState(pairList)
+  const sorted_pairs = pairs.slice().sort((a, b) => a.name.localeCompare(b.name))
   useUpdatePairsRecoil()
-
-
 
   return (
     <div>
@@ -124,8 +126,8 @@ export default function Main(props) {
             <CCardBody>
               <ul style={{paddingInlineStart: '10px'}}>
               {
-                tokens.map(token_id => {
-                  return <TokenInfo id={token_id} key={token_id}/>
+                tokens.map(token => {
+                  return <TokenInfo id={token.id} key={token.id}/>
                 })
               }
               </ul>
@@ -146,8 +148,8 @@ export default function Main(props) {
             <CCardBody>
               <ul style={{paddingInlineStart: '10px'}}>
               {
-                pairs.map(paid_id => {
-                  return <PairInfo id={paid_id} key={paid_id}/>
+                sorted_pairs.map(paid => {
+                  return <PairInfo id={paid.id} key={paid.id}/>
                 })
               }
               </ul>
