@@ -1,5 +1,7 @@
 import React from 'react'
-import { useSelector, useDispatch } from 'react-redux'
+import { useRecoilState } from 'recoil'
+// import { useSelector, useDispatch } from 'react-redux'
+
 import {
   CCreateElement,
   CSidebar,
@@ -13,6 +15,19 @@ import {
   CImg,
 } from '@coreui/react'
 
+import {
+  sidebarId,
+  userDataId,
+  accountAddressId,
+  pairList,
+  tokenList,
+  tokenFamily,
+  pairFamily,
+  tokenBalanceFamily,
+  pairBalanceFamily,
+  pairQuoteFamily,
+} from './atoms'
+
 import { CSidebarNavItem } from './SidebarNavItem'
 
 // import CIcon from '@coreui/icons-react'
@@ -21,13 +36,14 @@ import { CSidebarNavItem } from './SidebarNavItem'
 import navigation from './nav'
 
 const TheSidebar = () => {
-  const dispatch = useDispatch()
-  const show = useSelector(state => state.sidebar.sidebar_show)
+  // const dispatch = useDispatch()
+  // const show = useSelector(state => state.sidebar.sidebar_show)
+  const [show_sidebar, setShowSidebar] = useRecoilState(sidebarId)
 
   return (
     <CSidebar
-      show={show}
-      onShowChange={(val) => dispatch({type: 'set_sidebar', sidebar_show: val })}
+      show={show_sidebar}
+      onShowChange={(val) => setShowSidebar(val)}
     >
       <CSidebarBrand className="d-md-down-none" to="/">
         <CImg

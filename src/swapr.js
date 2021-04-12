@@ -1,3 +1,4 @@
+import BigNum from 'bn.js'
 import { useEffect } from 'react'
 // import { BN } from 'bn.js'
 import {
@@ -20,6 +21,8 @@ import {
 } from './StacksAccount'
 
 import {
+  accountAddressId,
+  userDataId,
   pairList,
   tokenList,
   tokenFamily,
@@ -60,12 +63,12 @@ export async function getTokenBalanceOf(token_principal, owner_principal) {
   console.log("getTokenBalanceOf.result", json)
   if (json.okay) {
     const value = deserializeCV(Buffer.from(json.result.slice(2), 'hex'))
-    console.log("getTokenBalanceOf.value", value.value.value)
+    console.log("getTokenBalanceOf.value", value.value.value, owner_principal)
 
     return value.value.value
   }
   console.log("getTokenBalanceOf: not okay")
-  return 'N/A'
+  return new BigNum(0)
 }
 
 export async function getTokenName(token_principal) {
@@ -367,6 +370,14 @@ export async function getPairInfo(pair_id) {
 // }
 
 export async function getTokenMetadata(uri) {
+  if (uri.length === 0) {
+    return {
+      name: 'N/A',
+      description: 'N/A',
+      image: 'https://swapr.finance/tokens/unknown.png',
+      vector: 'https://swapr.finance/tokens/unknown.svg',
+    }
+  }
   const options = {
     method: 'GET',
     mode: 'cors',
@@ -388,6 +399,9 @@ export async function useUpdatePairsRecoil() {
     const pair_list = []
     const retrieved_tokens = {}
     const token_list = []
+
+    const account_address = snapshot.getLoadable(accountAddressId).contents
+    console.log("account_address", account_address)
 
     const count = await getPairCount()
     console.log("count", count)
@@ -437,6 +451,9 @@ export async function useUpdatePairsRecoil() {
         console.log("full_token", full_token)
 
         set(tokenFamily(token.principal), full_token)
+
+        // recoil persit does not persit BigNum correctly,
+        set(tokenBalanceFamily(token.principal), (await getTokenBalanceOf(token.principal, account_address)).toString())
       }
     }
 

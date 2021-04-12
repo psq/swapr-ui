@@ -1,5 +1,6 @@
-import React, { useContext, useEffect, useState } from 'react'
-import { useSelector, useDispatch } from 'react-redux'
+import React, { /*useContext,*/ useEffect, useState } from 'react'
+// import { useSelector, useDispatch } from 'react-redux'
+import { useRecoilState } from 'recoil'
 
 import {
   CContainer,
@@ -10,7 +11,19 @@ import {
 
 // import { addressToString } from '@blockstack/stacks-transactions'
 
-import { AppContext } from './AppContext'
+// import { AppContext } from './AppContext'
+import {
+  userDataId,
+  accountAddressId,
+  pairList,
+  tokenList,
+  tokenFamily,
+  pairFamily,
+  tokenBalanceFamily,
+  pairBalanceFamily,
+  pairQuoteFamily,
+} from './atoms'
+
 import {
   fetchAccount,
   // getStacksAccount,
@@ -21,15 +34,20 @@ import {
   is_mainnet,
 } from './utils'
 
+// TODO(psq): need faucets for test tokens, which needs to be added to contracts
+// maybe ok on testnet for those fake ones, which have no value
+// don't even need a limit?
+
 export default function Faucet (props) {
-  const context = useContext(AppContext)
+  // const context = useContext(AppContext)
   const [state, setState] = useState({ stx_status: null, refresh: false, stx_current: null})
   const [action, setAction] = useState('')
-  const dispatch = useDispatch()
-  const stx_current = useSelector(state => state.stx.stx_balance)
+  const [userData] = useRecoilState(userDataId)
+  // const dispatch = useDispatch()
+  // const stx_current = useSelector(state => state.stx.stx_balance)
   const { refresh, stx_status } = state
 
-  const address = is_mainnet ? context.userData.profile.stxAddress.mainnet : context.userData.profile.stxAddress.testnet
+  const address = is_mainnet ? userData.profile.stxAddress.mainnet : userData.profile.stxAddress.testnet
 
   const setThenResetStatus = (state, reset_state) => {
     setState(state)
@@ -39,41 +57,41 @@ export default function Faucet (props) {
     }, 5000)
   }
 
-  useEffect(() => {
-    if (refresh) {
-      // console.log("useEffect start-faucet")
-      const id = setInterval(async () => {
-        // console.log("refresh STX-faucet", addressToString(address))
-        const stx_balance = await fetchAccount(address)
-        // console.log("stx_balance", stx_balance)
-        if (stx_balance !== stx_current) {
-          // console.log("updating store", stx_balance, stx_current)
-          dispatch({type: 'set_stx', stx_balance})
-          setState(state => ({...state, refresh: false, stx_current: null}))
-        }
-      }, 2500)
-      return () => {/*console.log("useEffect end-faucet");*/ clearInterval(id)}
-    }
-  }, [address, dispatch, refresh, stx_current])
+  // useEffect(() => {
+  //   if (refresh) {
+  //     // console.log("useEffect start-faucet")
+  //     const id = setInterval(async () => {
+  //       // console.log("refresh STX-faucet", addressToString(address))
+  //       const stx_balance = await fetchAccount(address)
+  //       // console.log("stx_balance", stx_balance)
+  //       if (stx_balance !== stx_current) {
+  //         // console.log("updating store", stx_balance, stx_current)
+  //         dispatch({type: 'set_stx', stx_balance})
+  //         setState(state => ({...state, refresh: false, stx_current: null}))
+  //       }
+  //     }, 2500)
+  //     return () => {/*console.log("useEffect end-faucet");*/ clearInterval(id)}
+  //   }
+  // }, [address, dispatch, refresh, stx_current])
 
   // TODO(psq): replace with useEffect that can be properly cleaned up
-  const claimSTXTestTokens = async (address) => {
-    setAction('claim')
-    try {
-      const result = await getSTX(address)
-      if (result.status === 200) {
-        setThenResetStatus({ stx_status: 'Tokens will arrive soon.', refresh: true, stx_current}, { stx_status: null})
-      } else if (result.status === 429) {
-        setThenResetStatus({ stx_status: 'Claiming tokens failed, too many requests.'}, { stx_status: null})
-      } else {
-        setThenResetStatus({ stx_status: `Claiming tokens failed (${result.status})`}, { stx_status: null})
-      }
-    } catch(e) {
-      setThenResetStatus({ stx_status: 'Claiming tokens failed.'}, { stx_status: null})
-      console.log(e)
-    }
-    setAction('')
-  }
+  // const claimSTXTestTokens = async (address) => {
+  //   setAction('claim')
+  //   try {
+  //     const result = await getSTX(address)
+  //     if (result.status === 200) {
+  //       setThenResetStatus({ stx_status: 'Tokens will arrive soon.', refresh: true, stx_current}, { stx_status: null})
+  //     } else if (result.status === 429) {
+  //       setThenResetStatus({ stx_status: 'Claiming tokens failed, too many requests.'}, { stx_status: null})
+  //     } else {
+  //       setThenResetStatus({ stx_status: `Claiming tokens failed (${result.status})`}, { stx_status: null})
+  //     }
+  //   } catch(e) {
+  //     setThenResetStatus({ stx_status: 'Claiming tokens failed.'}, { stx_status: null})
+  //     console.log(e)
+  //   }
+  //   setAction('')
+  // }
 
   return (
     <div className="Faucets">
@@ -83,7 +101,7 @@ export default function Faucet (props) {
             <div className="">STX Faucet</div>
           </CCol>
           <CCol md="3" className="py-3">
-            <CButton color="primary" className="my-2 my-sm-2" type="submit" onClick={() => { claimSTXTestTokens(address) }} >
+            <CButton color="primary" className="my-2 my-sm-2" type="submit" onClick={() => { /*claimSTXTestTokens(address)*/ }} >
               Claim
             </CButton>
             <div

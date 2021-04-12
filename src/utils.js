@@ -25,6 +25,7 @@ export const network = process.env.REACT_APP_NETWORK_ENV === 'mainnet' ? new Sta
 network.coreApiUrl = getAuthOrigin()
 
 export const is_mainnet = process.env.REACT_APP_NETWORK_ENV === 'mainnet'
+console.log("is_mainnet", is_mainnet)
 
 // export const getRPCClient = () => {
 //   // const { origin } = document.location

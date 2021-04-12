@@ -1,5 +1,6 @@
-import React, { useContext } from 'react'
+import React /*, { useContext }*/ from 'react'
 // import { useSelector, useDispatch } from 'react-redux'
+import { useRecoilState } from 'recoil'
 import {
   CHeader,
   CHeaderNav,
@@ -9,15 +10,28 @@ import {
 
 import { useConnect } from '@stacks/connect-react'
 
-import { AppContext } from './AppContext'
+import {
+  userDataId,
+  accountAddressId,
+  pairList,
+  tokenList,
+  tokenFamily,
+  pairFamily,
+  tokenBalanceFamily,
+  pairBalanceFamily,
+  pairQuoteFamily,
+} from './atoms'
+
+// import { AppContext } from './AppContext'
 
 const TheHeader = ({ signOut }) => {
   // const dispatch = useDispatch()
   // const sidebar_show = useSelector(state => state.sidebar.sidebar_show)
-  const context = useContext(AppContext)
+  // const context = useContext(AppContext)
   const { doOpenAuth } = useConnect()
+  const [userData] = useRecoilState(userDataId)
 
-  console.log("context.userData", context.userData)
+  console.log("TheHeader.userData", userData)
 
   // const toggleSidebar = () => {
   //   const val = [true, 'responsive'].includes(sidebar_show) ? false : 'responsive'
@@ -31,9 +45,9 @@ const TheHeader = ({ signOut }) => {
 
   return (
     <CHeader>
-      {context.userData ? (
+      {userData ? (
         <CHeaderNav className="px-0 col-6 offset-md-6" >
-          <div className="col-9 text-right">{context.userData.username || context.userData.identityAddress}</div>
+          <div className="col-9 text-right">{userData.username || userData.identityAddress}</div>
           <CButton color="link" className="my-2 my-sm-2" type="submit" onClick={() => { signOut() }} >Sign off</CButton>
         </CHeaderNav>
       ) : (
