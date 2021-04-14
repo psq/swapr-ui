@@ -179,6 +179,7 @@ export async function getTokenURI(token_principal) {
   console.log("getTokenURI.result", json)
   if (json.okay) {
     const value = deserializeCV(Buffer.from(json.result.slice(2), 'hex'))
+    // TODO(psq): handle case where it returns `none`, need a token (DIKO?)
     console.log("getTokenURI.value", value.value.value.data)
     return value.value.value.data
   }
@@ -421,8 +422,8 @@ export async function useUpdatePairsRecoil() {
 
   useEffect(() => {
     updatePairsAndTokens()
-    const id = setInterval(() => updatePairsAndTokens(), 60000)
-    return () => { clearInterval(id) }
+    // const id = setInterval(() => updatePairsAndTokens(), 60000)
+    // return () => { clearInterval(id) }
   }, [/*updatePairsAndTokens*/])
 }
 
