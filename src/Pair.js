@@ -63,6 +63,10 @@ export default function Pair (props) {
   const [flip, setFlip] = useState(false)
   const [pair, setPair] = useRecoilState(pairFamily(pairId))
   const [pair_balances] = useRecoilState(pairBalanceFamily(pairId))
+
+  const [token_balance_x] = useRecoilState(tokenBalanceFamily(pair.token_x_principal))
+  const [token_balance_y] = useRecoilState(tokenBalanceFamily(pair.token_y_principal))
+
   const [token_x, setTokenX] = useRecoilState(tokenFamily(pair.token_x_principal))
   const [token_y, setTokenY] = useRecoilState(tokenFamily(pair.token_y_principal))
   const [token_swapr, setTokenySwape] = useRecoilState(tokenFamily(pair.swapr_token_principal))
@@ -114,6 +118,8 @@ export default function Pair (props) {
 
   const flipTokens = useCallback(() => {
     setFlip(!flip)
+    // TODO(psq): instead of resetting, flip should keep user input value, and calculate the other one
+    // depdending on where input is, as if user had entered that value in the new location
     setValueX(0)
     setValueY(0)
     setFee(0)
@@ -178,7 +184,7 @@ export default function Pair (props) {
         contractPrincipalCV(token_x_addr, token_x_contract_name),
         contractPrincipalCV(token_y_addr, token_y_contract_name),
         uintCV(dx * 10**token_x_swap.decimals),
-        uintCV(minimum_received * 10**token_x_swap.decimals),
+        uintCV(minimum_received * 10**token_y_swap.decimals),
       ],
       appDetails: {
         name: process.env.REACT_APP_NAME,
@@ -188,14 +194,15 @@ export default function Pair (props) {
       stxAddress: accountAddress,
       onFinish: data => {
         // TODO(psq): use a promise to return from await?
+        // TODO(psq): this may get called multiple times, so only record once to display status
+        // TODO(psq): display pending transaction status in a small toast near top left of screen?
         console.log('Stacks Transaction:', data.stacksTransaction);
         console.log('Transaction ID:', data.txId);
         console.log('Raw transaction:', data.txRaw);
       },
     };
 
-    const result = await doContractCall(options)
-    console.log("swapTokens.result", result)
+    await doContractCall(options)  // this does not awaits anything, returns as soon as extenstion windows shows up
   })
 
   console.log("pair", pair)
@@ -244,9 +251,10 @@ export default function Pair (props) {
               <CCardBody>
                 <p>swap {token_x_swap.name} ({token_x_swap.symbol}) to {token_y_swap.name} ({token_y_swap.symbol})</p>
                 <p>Exchange rate: {((new BigNum(balance_y_swap)).toNumber() / (new BigNum(balance_x_swap)).toNumber()).toFixed(6) * 10**(token_x_swap.decimals - token_y_swap.decimals) }</p>
-                <p>{token_x_swap.name} balance: {(new BigNum(balance_x_swap)).toNumber() / 10**token_x_swap.decimals} </p>
-                <p>{token_y_swap.name} balance: {(new BigNum(balance_y_swap)).toNumber() / 10**token_y_swap.decimals} </p>
-
+                <p>{token_x_swap.name} pool balance: {(new BigNum(balance_x_swap)).toNumber() / 10**token_x_swap.decimals} </p>
+                <p>{token_y_swap.name} pool balance: {(new BigNum(balance_y_swap)).toNumber() / 10**token_y_swap.decimals} </p>
+                <p>{token_x_swap.name} user balance: {flip ? (new BigNum(token_balance_y)).toNumber() / 10**token_y.decimals : (new BigNum(token_balance_x)).toNumber() / 10**token_x.decimals}</p>
+                <p>{token_y_swap.name} user balance: {flip ? (new BigNum(token_balance_x)).toNumber() / 10**token_x.decimals : (new BigNum(token_balance_y)).toNumber() / 10**token_y.decimals}</p>
                 <p>{`flip: ${flip}`}</p>
                 <CLabel>{`${token_x_swap.name} Amount`}</CLabel>
                 <CInput
@@ -262,7 +270,7 @@ export default function Pair (props) {
                   onChange={e => onChangeDestination(e)}
                   placeholder="0"
                 />
-                <CLabel>{`Swapping fee: ${fee} ${token_x_swap.name}`}</CLabel>
+                <CLabel>{`Liquidity Provider fee: ${fee} ${token_x_swap.name}`}</CLabel>
 
                 <div className="form-inline">
                   <CLabel>{`Max slippage:`}</CLabel>

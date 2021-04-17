@@ -43,9 +43,10 @@ function TokenInfo(props) {
   return <li style={{listStyleType: 'none'}}>
     <Link to={`/token/${id}`}>
       <img style={{width: "45px", height: "35px", paddingTop: '3px', paddingBottom: '3px', paddingRight: "10px"}} src={token.metadata.vector} alt="Token icon"/>
-      {token.name}:&nbsp;
-      {(new BigNum(token_balance)).toNumber() / 10**token.decimals}
+      {token.name}
     </Link>
+    :&nbsp;
+    {(new BigNum(token_balance)).toNumber() / 10**token.decimals}
   </li>
 }
 
