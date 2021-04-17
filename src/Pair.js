@@ -4,6 +4,19 @@ import { useParams } from "react-router-dom"
 import { Link } from "react-router-dom"
 import { useRecoilState } from 'recoil'
 
+import { useConnect } from '@stacks/connect-react'
+import {
+  uintCV,
+  intCV,
+  bufferCV,
+  stringAsciiCV,
+  stringUtf8CV,
+  contractPrincipalCV,
+  standardPrincipalCV,
+  trueCV,
+  PostConditionMode,
+} from '@stacks/transactions'
+
 // import withStyles from "@material-ui/core/styles/withStyles";
 // import Button from "@material-ui/core/Button";
 
@@ -24,6 +37,7 @@ import {
 } from './swapr'
 
 import {
+  accountAddressId,
   pairList,
   tokenList,
   tokenFamily,
@@ -33,6 +47,9 @@ import {
   pairQuoteFamily,
 } from './atoms'
 
+import {
+  network,
+} from './utils'
 
 export default function Pair (props) {
   let { pairId } = useParams()
@@ -42,6 +59,7 @@ export default function Pair (props) {
   const [value_y, setValueY] = useState(0)
   const [fee, setFee] = useState(0)
 
+  const [accountAddress] = useRecoilState(accountAddressId)
   const [flip, setFlip] = useState(false)
   const [pair, setPair] = useRecoilState(pairFamily(pairId))
   const [pair_balances] = useRecoilState(pairBalanceFamily(pairId))
@@ -50,6 +68,9 @@ export default function Pair (props) {
   const [token_swapr, setTokenySwape] = useRecoilState(tokenFamily(pair.swapr_token_principal))
   const [slippage, setSlippage] = useState(0.005)
   const [custom_slippage, setCustomSlippage] = useState('')
+  const { doContractCall } = useConnect()
+
+
   useUpdatePairsRecoil()
 
   const exchange_rate = ((new BigNum(pair_balances.balance_y)).toNumber() / (new BigNum(pair_balances.balance_x)).toNumber()).toFixed(6) * 10**(token_x.decimals - token_y.decimals)
@@ -142,8 +163,39 @@ export default function Pair (props) {
     }
   })
 
-  const swapTokens = useCallback(async (token_x, token_y, dx, flip) => {
-    console.log("swapTokens", token_x.name, token_y.name, dx, flip)
+  const swapTokens = useCallback(async (token_x, token_y, dx, minimum_received, flip) => {
+    console.log("swapTokens", token_x.name, token_y.name, dx * 10**token_x_swap.decimals, minimum_received * 10**token_x_swap, flip)
+
+    const [token_x_addr, token_x_contract_name] = token_x.principal.split('.')
+    const [token_y_addr, token_y_contract_name] = token_y.principal.split('.')
+
+    const options = {
+      network,
+      contractAddress: process.env.REACT_APP_SWAPR_STX,
+      contractName: process.env.REACT_APP_CONTRACT_NAME_SWAPR,
+      functionName: flip ? 'swap-y-for-x' : 'swap-x-for-y',
+      functionArgs: [
+        contractPrincipalCV(token_x_addr, token_x_contract_name),
+        contractPrincipalCV(token_y_addr, token_y_contract_name),
+        uintCV(dx * 10**token_x_swap.decimals),
+        uintCV(minimum_received * 10**token_x_swap.decimals),
+      ],
+      appDetails: {
+        name: process.env.REACT_APP_NAME,
+        icon: window.location.origin + '/swapr-square.png',
+      },
+      postConditionMode: PostConditionMode.Allow,  // TODO(psq): allow for now, there is no api to retrieve the token in sip-010!!!
+      stxAddress: accountAddress,
+      onFinish: data => {
+        // TODO(psq): use a promise to return from await?
+        console.log('Stacks Transaction:', data.stacksTransaction);
+        console.log('Transaction ID:', data.txId);
+        console.log('Raw transaction:', data.txRaw);
+      },
+    };
+
+    const result = await doContractCall(options)
+    console.log("swapTokens.result", result)
   })
 
   console.log("pair", pair)
@@ -212,7 +264,7 @@ export default function Pair (props) {
                 />
                 <CLabel>{`Swapping fee: ${fee} ${token_x_swap.name}`}</CLabel>
 
-                <div class="form-inline">
+                <div className="form-inline">
                   <CLabel>{`Max slippage:`}</CLabel>
                   <CButton color="primary" className={ `my-2 my-sm-2 btn-sm ml-2 ${slippage === 0.001 ? 'btn-primary' : 'btn-secondary'}` } type="submit" onClick={() => { setSlippage(0.001); setCustomSlippage('') }} >
                     0.1%
@@ -234,7 +286,7 @@ export default function Pair (props) {
                 </div>
                 <p>Price Impact: {isNaN(price_impact) ? null : (price_impact < 0.01 ? '< 0.01%' : `${price_impact.toFixed(2)}%`)}</p>
                 <div>
-                  <CButton color="primary" className="my-2 my-sm-2 mr-3" type="submit" onClick={() => { swapTokens(token_x, token_y, 0 /*dx*/, flip) }} >
+                  <CButton color="primary" className="my-2 my-sm-2 mr-3" type="submit" onClick={() => { swapTokens(token_x, token_y, value_x, minimum_received, flip) }} >
                     Swap
                   </CButton>
                   <CButton color="secondary" className="my-2 my-sm-2" type="submit" onClick={() => { flipTokens() }} >

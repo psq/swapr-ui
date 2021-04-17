@@ -1,5 +1,4 @@
-import React, { /*useContext,*/ useEffect, useState } from 'react'
-// import { useSelector, useDispatch } from 'react-redux'
+import React, { useEffect, useState } from 'react'
 import { useRecoilState } from 'recoil'
 
 import {
@@ -9,9 +8,6 @@ import {
   CButton,
 } from '@coreui/react'
 
-// import { addressToString } from '@blockstack/stacks-transactions'
-
-// import { AppContext } from './AppContext'
 import {
   userDataId,
   accountAddressId,
@@ -26,7 +22,6 @@ import {
 
 import {
   fetchAccount,
-  // getStacksAccount,
   getSTX,
 } from './StacksAccount'
 
@@ -39,12 +34,9 @@ import {
 // don't even need a limit?
 
 export default function Faucet (props) {
-  // const context = useContext(AppContext)
   const [state, setState] = useState({ stx_status: null, refresh: false, stx_current: null})
   const [action, setAction] = useState('')
   const [userData] = useRecoilState(userDataId)
-  // const dispatch = useDispatch()
-  // const stx_current = useSelector(state => state.stx.stx_balance)
   const { refresh, stx_status } = state
 
   const address = is_mainnet ? userData.profile.stxAddress.mainnet : userData.profile.stxAddress.testnet

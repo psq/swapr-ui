@@ -346,6 +346,9 @@ export async function useUpdatePairsRecoil() {
 
     const account_address = snapshot.getLoadable(accountAddressId).contents
     console.log("account_address", account_address)
+    if (account_address.length === 0) {  // too early
+      return
+    }
 
     const count = await getPairCount()
     console.log("count", count)

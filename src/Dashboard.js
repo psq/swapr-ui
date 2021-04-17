@@ -1,5 +1,5 @@
 import BigNum from 'bn.js'
-import React /*, { useContext }*/ from 'react'
+import React from 'react'
 import { Link } from "react-router-dom"
 import { useRecoilState } from 'recoil'
 
@@ -29,16 +29,10 @@ import {
   pairQuoteFamily,
 } from './atoms'
 
-// import {
-//   useUpdateSTX,
-// } from './StacksAccount'
-
 import {
   BNWithCommas,
   is_mainnet,
 } from './utils'
-
-// import { AppContext } from './AppContext'
 
 function TokenInfo(props) {
   const id = props.id
@@ -80,8 +74,6 @@ function PairInfo(props) {
 
 
 export default function Main(props) {
-  // const context = useContext(AppContext)
-  // const address = is_mainnet ? context.userData.profile.stxAddress.mainnet : context.userData.profile.stxAddress.testnet
   const [accountAddress, setAccountAddress] = useRecoilState(accountAddressId)
 
   console.log("accountAddress", accountAddress)

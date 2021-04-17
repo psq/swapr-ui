@@ -1,11 +1,8 @@
-import React, { /*useContext, useEffect, useState*/ } from 'react'
-// import { useSelector, useDispatch } from 'react-redux'
+import React from 'react'
 import { Link } from "react-router-dom"
 import { useRecoilState } from 'recoil'
 
 import {
-  // checkPairDifferences,
-  // useUpdatePairs,
   useUpdatePairsRecoil,
 } from './swapr'
 
@@ -36,14 +33,6 @@ function PairInfo(props) {
 }
 
 export default function Pairs(props) {
-  // const context = useContext(AppContext)
-
-  // const dispatch = useDispatch()
-  // const { pairs } = useSelector(state => state.pairs, (item, previous) => {
-  //   return checkPairDifferences(item, previous)
-  // })
-  // useUpdatePairs(dispatch)
-
   const [pairs, setPairs] = useRecoilState(pairList)
   useUpdatePairsRecoil()
   const sorted_pairs = pairs.slice().sort((a, b) => a.name.localeCompare(b.name))

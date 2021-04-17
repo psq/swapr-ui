@@ -1,6 +1,5 @@
 import React, { useEffect, /*useContext,*/ Suspense } from 'react'
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
-// import { useDispatch } from 'react-redux'
 import { useRecoilState } from 'recoil'
 
 import { AppConfig, UserSession } from '@stacks/connect'
@@ -10,7 +9,6 @@ import { CContainer, CFade } from '@coreui/react'
 import './scss/style.scss'
 
 import {
-  // getStacksAccount,
   fetchAccount,
 } from './StacksAccount'
 
@@ -18,12 +16,8 @@ import TheHeader from './TheHeader'
 import TheFooter from './TheFooter'
 import TheSidebar from './TheSidebar'
 
-import { defaultState /*, AppContext*/ } from './AppContext'
 import Landing from './Landing'
-// import Exchange from './Exchange'
-// import Main from './Main'
-// import Pool from './Pool'
-// import Profile from './Profile'
+
 import {
   getAuthOrigin,
   is_mainnet,
@@ -52,53 +46,38 @@ const loading = (
 const appConfig = new AppConfig([])
 const userSession = new UserSession({ appConfig })
 
-// console.log("appConfig", appConfig)
-
 export default function App(props) {
-  const [state, setState] = React.useState(defaultState)
   const [userData, setUserData] = useRecoilState(userDataId)
   const [accountAddress, setAccountAddress] = useRecoilState(accountAddressId)
-
-  // const dispatch = useDispatch()
-  // const [userSession, setUserSession] = useState();
-  // const {authenticated, userSession, userData, signIn, signOut, person} = useBlockstack()
-  // console.log("authenticated", authenticated)
-  // console.log("userSession", userSession)
-  // console.log("userData", userData)
-  // console.log("person", person)
-  // console.log("signIn, signOut", signIn, signOut)
-  // const [authResponse, setAuthResponse] = React.useState('')
-  // const [appPrivateKey, setAppPrivateKey] = React.useState('')
   const [authResponse, setAuthResponse] = React.useState('')
 
   const authOrigin = getAuthOrigin()
 
   const signOut = () => {
-    // setState({ userData: null, show_landing: true, })
-    // dispatch({type: 'set_stx', stx_balance: null})
+    console.log("signOut")
+    userSession.signUserOut()
+    setAccountAddress('')
+    setUserData('')
   }
 
   useEffect(() => {
     if (userSession.isUserSignedIn()) {
       const userData = userSession.loadUserData()
-      // setState(state => ({ ...state, userData }))
       const address = is_mainnet ? userData.profile.stxAddress.mainnet : userData.profile.stxAddress.testnet
       setAccountAddress(address)
       setUserData(userData)
+      console.log()
     } else {
-      setState(state => ({ ...state, show_landing: true }))
     }
   }, [])
 
   const TheContent = () => {
-    // const context = useContext(AppContext)
-
     return (
       <main className="c-main">
         <CContainer fluid>
           <Suspense fallback={loading}>
-            {state.show_landing && <Landing/>}
-            {/*context.*/userData &&
+            {
+              userData ?
               <Switch>
                 {routes.map((route, idx) => {
                   return route.component && (
@@ -115,6 +94,8 @@ export default function App(props) {
                   )
                 })}
               </Switch>
+              :
+              <Landing/>
             }
           </Suspense>
         </CContainer>
@@ -146,12 +127,9 @@ export default function App(props) {
       console.log("authOptions.finished", userSession, authResponse)
       const userData = userSession.loadUserData();
       console.log("finished.userData", userData)
-      // setAppPrivateKey(userSession.loadUserData().appPrivateKey);
       setAuthResponse(authResponse)
 
       const address = is_mainnet ? userData.profile.stxAddress.mainnet : userData.profile.stxAddress.testnet
-      // const stx_balance = await fetchAccount(address)
-      // setState({ userData, /*stx_balance*/ })
       setAccountAddress(address)
       setUserData(userData)
 
@@ -167,16 +145,10 @@ export default function App(props) {
     },
   };
 
-
-  // const { userData } = state
-  // console.log("userData", userData)
-  // console.log("app.state", state)
   return (
     <div className="App">
       <Connect authOptions={authOptions}>
         <Router>
-          {/*authResponse && <input type="hidden" id="auth-response" value={authResponse} />*/}
-          {/*appPrivateKey && <input type="hidden" id="app-private-key" value={appPrivateKey} />*/}
           <Layout />
         </Router>
       </Connect>

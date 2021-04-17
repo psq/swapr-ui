@@ -1,4 +1,4 @@
-import React, { /* useContext, */ } from 'react'
+import React from 'react'
 import { Link, useParams } from "react-router-dom"
 import { useRecoilState } from 'recoil'
 
@@ -17,7 +17,6 @@ import {
 } from './atoms'
 
 export default function Token(props) {
-  // const context = useContext(AppContext)
   let { tokenId } = useParams()
   const [token, setToken] = useRecoilState(tokenFamily(tokenId))
   useUpdatePairsRecoil()
@@ -33,24 +32,6 @@ export default function Token(props) {
       <p>Decimals: {token.decimals}</p>
       <p>Supply: {token.total_supply / 10**token.decimals}</p>
       <p>Metadata URI: <a href={token.uri}>{token.uri.length !== 0 ? token.uri : 'N/A'}</a></p>
-
-      {/*
-        get token pair list from contract
-        pick pair
-        input amount token1 or token2
-        calculate amount for other token (using current exchange rate)
-        fund
-
-        or
-
-        create new pair
-        select token1 from list (add token by entering contract first?)
-        select token2 from list (add token by entering contract first?)
-        input amount token1
-        input amount token2
-        fund
-      */}
-
     </div>
   )
 }

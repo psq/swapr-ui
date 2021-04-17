@@ -1,6 +1,5 @@
 import React from 'react'
 import { useRecoilState } from 'recoil'
-// import { useSelector, useDispatch } from 'react-redux'
 
 import {
   CCreateElement,
@@ -30,14 +29,9 @@ import {
 
 import { CSidebarNavItem } from './SidebarNavItem'
 
-// import CIcon from '@coreui/icons-react'
-
-// sidebar nav config
 import navigation from './nav'
 
 const TheSidebar = () => {
-  // const dispatch = useDispatch()
-  // const show = useSelector(state => state.sidebar.sidebar_show)
   const [show_sidebar, setShowSidebar] = useRecoilState(sidebarId)
 
   return (
@@ -74,4 +68,5 @@ const TheSidebar = () => {
   )
 }
 
+// TODO(psq): is using memo still relevant?
 export default React.memo(TheSidebar)
