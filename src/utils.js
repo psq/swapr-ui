@@ -3,8 +3,6 @@ import {
   StacksTestnet,
 } from '@stacks/network'
 
-// import { RPCClient } from '@blockstack/rpc-client'
-
 export const getAuthOrigin = () => {
   if (process.env.REACT_APP_NETWORK_ENV === 'mainnet') {
     return 'https://stacks-node-api.mainnet.stacks.co'

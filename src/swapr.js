@@ -366,19 +366,22 @@ export async function useUpdatePairsRecoil() {
       if (!retrieved_tokens[pair.token_x_principal]) {
         retrieved_tokens[pair.token_x_principal] = {
           type: 'token',
-          principal: pair.token_x_principal
+          principal: pair.token_x_principal,
+          paired: true,
         }
       }
       if (!retrieved_tokens[pair.token_y_principal]) {
         retrieved_tokens[pair.token_y_principal] = {
           type: 'token',
-          principal: pair.token_y_principal
+          principal: pair.token_y_principal,
+          paired: true,
         }
       }
       if (!retrieved_tokens[pair.swapr_token_principal]) {
         retrieved_tokens[pair.swapr_token_principal] = {
           type: 'token',
-          principal: pair.swapr_token_principal
+          principal: pair.swapr_token_principal,
+          paired: false,
         }
       }
       const pair_balances = await getPairBalances(pair.token_x_principal, pair.token_y_principal)
@@ -396,6 +399,7 @@ export async function useUpdatePairsRecoil() {
       const full_token = {
         type: token.type,
         principal: token.principal,
+        paired: token.paired,
         name: await getTokenName(token.principal),
         symbol: await getTokenSymbol(token.principal),
         decimals: await getTokenDecimals(token.principal),
@@ -407,6 +411,7 @@ export async function useUpdatePairsRecoil() {
       token_list.push({
         id: full_token.principal,
         name: full_token.name,
+        paired: full_token.paired,
       })
       console.log("full_token", full_token)
 

@@ -1,0 +1,87 @@
+i.icon {
+    display: inline-block;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 100%;
+    background-color: white;
+    min-width: 20px;
+    min-height: 20px;
+}
+
+.aave-logo        {background-image: url("/images/token-icons/aave-logo.svg");}
+.avax-logo        {background-image: url("/images/token-icons/avalanche-avax-logo.svg");}
+.bnb-logo         {background-image: url("/images/token-icons/binance-coin-bnb-logo.svg");}
+.btc-logo         {background-image: url("/images/token-icons/bitcoin-btc-logo.svg");}
+.bit-cash-logo    {background-image: url("/images/token-icons/bitcoin-cash-bch-logo.svg");}
+.bsv-logo         {background-image: url("/images/token-icons/bitcoin-sv-bsv-logo.svg");}
+.cardano-logo     {background-image: url("/images/token-icons/cardano-ada-logo.svg");}
+.link-logo        {background-image: url("/images/token-icons/chainlink-link-logo.svg");}
+.chz-logo         {background-image: url("/images/token-icons/chiliz-chz-logo.svg");}
+.comp-logo        {background-image: url("/images/token-icons/compound-comp-logo.svg");}
+.cusdc-logo       {background-image: url("/images/token-icons/compound-usd-coin-cusdc-logo.svg");}
+.cosmos-atom-logo {background-image: url("/images/token-icons/cosmos-atom-logo.svg");}
+.diko             {background-image: url("/images/token-icons/diko.svg");}
+.eos-logo         {background-image: url("/images/token-icons/eos-logo.svg");}
+.etc-logo         {background-image: url("/images/token-icons/ethereum-classic-etc-logo.svg");}
+.eth-logo         {background-image: url("/images/token-icons/ethereum-eth-logo.svg");}
+.euro-coin-logo   {background-image: url("/images/token-icons/euro-coin-logo.svg");}
+.ftx-logo         {background-image: url("/images/token-icons/ftx-token-ftt-logo.svg");}
+.gold             {background-image: url("/images/token-icons/gold.svg");}
+.husd-logo        {background-image: url("/images/token-icons/husd-husd-logo.svg");}
+.stx-logo         {background-image: url("/images/token-icons/stacks-stx-logo.svg");}
+.swapr-logo       {background-image: url("/images/token-icons/swapr-logo.svg");}
+.usdc-logo        {background-image: url("/images/token-icons/usd-coin-usdc-logo.svg");}
+.wbtc-logo        {background-image: url("/images/token-icons/wrapped-bitcoin-wbtc-logo.svg");}
+.xbtc-logo        {background-image: url("/images/token-icons/xbtc-1.svg");}
+.xrp-logo         {background-image: url("/images/token-icons/xrp-logo.svg");}
+.xusd-logo        {background-image: url("/images/token-icons/xusd.svg");}
+
+.ax-logo          {background-image: url("/images/token-icons/ax-logo.svg");}
+.ax-btc-logo      {background-image: url("/images/token-icons/ax-btc.svg");}
+.ax-eth-logo      {background-image: url("/images/token-icons/ax-eth.svg");}
+.ax-usd-logo      {background-image: url("/images/token-icons/ax-usd.svg");}
+
+
+/* liteweight icons black */
+.icon-aave        {background-image: url("/images/token-icons/icon-aave.svg");}
+.icon-avax        {background-image: url("/images/token-icons/icon-avax.svg");}
+.icon-binance     {background-image: url("/images/token-icons/icon-binance.svg");}
+.icon-bitcoin     {background-image: url("/images/token-icons/icon-bitcoin.svg");}
+.icon-btc         {background-image: url("/images/token-icons/icon-btc.svg");}
+.icon-btc-sv      {background-image: url("/images/token-icons/icon-btc-sv.svg");}
+.icon-cardano     {background-image: url("/images/token-icons/icon-cardano-ada.svg");}
+.icon-chainlink   {background-image: url("/images/token-icons/icon-chainlink.svg");}
+.icon-chz         {background-image: url("/images/token-icons/icon-chz.svg");}
+.icon-cmp-usd     {background-image: url("/images/token-icons/icon-cmp-usd.svg");}
+.icon-comp        {background-image: url("/images/token-icons/icon-comp.svg");}
+.icon-cosmos-atom {background-image: url("/images/token-icons/icon-cosmos-atom.svg");}
+.icon-eos         {background-image: url("/images/token-icons/icon-eos.svg");}
+.icon-eth         {background-image: url("/images/token-icons/icon-eth.svg");}
+.icon-euro        {background-image: url("/images/token-icons/icon-euro.svg");}
+.icon-ftx         {background-image: url("/images/token-icons/icon-ftx.svg");}
+.icon-gold        {background-image: url("/images/token-icons/icon-gold.svg");}
+.icon-husd        {background-image: url("/images/token-icons/icon-husd.svg");}
+.icon-iota-miota  {background-image: url("/images/token-icons/icon-iota-miota.svg");}
+.icon-ltc         {background-image: url("/images/token-icons/icon-ltc.svg");}
+.icon-nem-xem     {background-image: url("/images/token-icons/icon-nem-xem.svg");}
+.icon-polkadot    {background-image: url("/images/token-icons/icon-polkadot.svg");}
+.icon-stx         {background-image: url("/images/token-icons/icon-stx.svg");}
+.icon-swapr       {background-image: url("/images/token-icons/icon-swapr.svg");}
+.icon-uni         {background-image: url("/images/token-icons/icon-uni.svg");}
+.icon-usd         {background-image: url("/images/token-icons/icon-usd.svg");}
+.icon-usdc        {background-image: url("/images/token-icons/icon-usdc.svg");}
+
+.ax-icon          {background-image: url("/images/token-icons/icon-ax.svg");}
+.ax-btc-icon      {background-image: url("/images/token-icons/icon-ax-btc.svg");}
+.ax-eth-icon      {background-image: url("/images/token-icons/icon-ax-eth.svg");}
+.ax-usd-icon      {background-image: url("/images/token-icons/icon-ax-usd.svg");}
+
+
+
+
+.icon-swap        {background-image: url("/images/icons/icon-swap.svg");}
+.icon-pool        {background-image: url("/images/icons/icon-pool.svg");}
+.icon-settings    {background-image: url("/images/icons/icon-settings.svg");}
+
+
+.icon-settings-white {background-image: url("/images/icons/icon-settings-white.svg");}
