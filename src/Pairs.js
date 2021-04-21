@@ -71,7 +71,7 @@ const useStyles = makeStyles({
 
 const button_styles = {
   root: {
-    background: 'linear-gradient(45deg, #FE6BeB 30%, #FF8Ec3 90%)',
+    background: 'linear-gradient(45deg, #FE6BeB 30%, #c151ff 90%)',
     borderRadius: 3,
     border: 0,
     color: 'white',
@@ -165,11 +165,6 @@ export default function Pairs(props) {
   }
   console.log("tokens_by_ids", tokens_by_ids)
 
-  const history = useHistory()
-  const location = useLocation()
-  console.log("location", location)
-  console.log("location.hash", location.hash)
-
   const [value_x, setValueX] = React.useState(sorted_token_ids[0])
   const [input_value_x, setInputValueX] = React.useState('')
   const [value_y, setValueY] = React.useState(null)
@@ -184,8 +179,23 @@ export default function Pairs(props) {
   console.log("token_x", token_x)
   console.log("token_y", token_y)
 
+  const history = useHistory()
+  const location = useLocation()
+  console.log("location", location)
+  console.log("location.hash", location.hash)
+  const [token_x_url, token_y_url] = location.hash.slice(1).split('$')
+  if (tokens_by_ids[token_x_url] && value_x !== token_x_url) {
+    setValueX(token_x_url)
+  }
+  if (tokens_by_ids[token_y_url] && value_y !== token_y_url) {
+    setValueY(token_y_url)
+  }
+
+
   const [token_balance_x] = useRecoilState(tokenBalanceFamily(value_x))
   const [token_balance_y] = useRecoilState(tokenBalanceFamily(value_y))
+  console.log("token_balance_x", token_balance_x, value_x)
+  console.log("token_balance_y", token_balance_y, value_y)
 
   const [amount_x, setAmountX] = useState(0)
   const [amount_y, setAmountY] = useState(0)
@@ -211,20 +221,25 @@ export default function Pairs(props) {
   console.log("pair_info", pair_info)
 
   let valid_pair = false
+  let valid_pair_id = null
   let flipped = null
   for (let pair of pair_info) {
     console.log(pair.token_x_principal, pair.token_y_principal)
     if (pair.token_x_principal === value_x && pair.token_y_principal === value_y) {
       console.log("match", pair, false)
       valid_pair = true
+      valid_pair_id = `${pair.token_x_principal}$${pair.token_y_principal}`
       flipped = false
     } else if (pair.token_x_principal === value_y && pair.token_y_principal === value_x) {
       console.log("match", pair, false)
       valid_pair = true
+      valid_pair_id = `${pair.token_x_principal}$${pair.token_y_principal}`
       flipped = true
     }
   }
-  console.log("valid_pair", valid_pair, flipped)
+  console.log("valid_pair", valid_pair, valid_pair_id, flipped)
+  const [pair_balances] = useRecoilState(pairBalanceFamily(valid_pair_id))
+  console.log("pair_balances", pair_balances)
 
 
   // fee in basis points
@@ -279,16 +294,16 @@ export default function Pairs(props) {
     setAmountX(data.target.value)
     if (!flipped) {
       const dx = data.target.value.length > 0 ? parseFloat(data.target.value) : 0
-      const [dy, swapping_fee] = curveXtoY((new BigNum(token_balance_x)).toNumber(), (new BigNum(token_balance_y)).toNumber(), dx * 10**token_x.decimals, 30)
+      const [dy, swapping_fee] = curveXtoY((new BigNum(pair_balances.balance_x)).toNumber(), (new BigNum(pair_balances.balance_y)).toNumber(), dx * 10**token_x.decimals, 30)
       console.log("dy, swapping_fee", dy, swapping_fee)
-      setAmountY(dy / 10**token_y.decimals)
+      setAmountY((dy / 10**token_y.decimals).toFixed(6))
       setFee(swapping_fee / 10**token_x.decimals)
     } else {
-    //   const dy = data.target.value.length > 0 ? parseFloat(data.target.value) : 0
-    //   const [dx, swapping_fee] = curveYtoX((new BigNum(token_balance_x)).toNumber(), (new BigNum(token_balance_y)).toNumber(), dy * 10**token_y.decimals, 30)
-    //   console.log("dx, swapping_fee", dx, swapping_fee)
-    //   setValueY(dx / 10**token_x.decimals)
-    //   setFee(swapping_fee / 10**token_y.decimals)
+      const dy = data.target.value.length > 0 ? parseFloat(data.target.value) : 0
+      const [dx, swapping_fee] = curveYtoX((new BigNum(pair_balances.balance_x)).toNumber(), (new BigNum(pair_balances.balance_y)).toNumber(), dy * 10**token_x.decimals, 30)
+      console.log("dx, swapping_fee", dx, swapping_fee)
+      setAmountY((dx / 10**token_y.decimals).toFixed(6))
+      setFee(swapping_fee / 10**token_y.decimals)
     }
   }
 
@@ -314,7 +329,6 @@ export default function Pairs(props) {
 
   const connectStacksWallet = () => {
     console.log("connect")
-    history.replace('pairs#a$b')
     doOpenAuth()
   }
 
@@ -337,7 +351,7 @@ export default function Pairs(props) {
         renderInput={(params) => {
           // console.log("renderInput", params)
           return (<React.Fragment>
-            <Grid container className={classes.root} spacing={1} alignItems="flex-end">
+            <Grid container style={{paddingLeft: '10px'}} className={classes.root} spacing={1} alignItems="flex-end">
               <Grid item>
                 {token_x && token_x.metadata ? <img style={{marginBottom: '7px'}} width={'30px'} className="mr-05" src={token_x.metadata.vector}/> : null}
               </Grid>
@@ -347,7 +361,7 @@ export default function Pairs(props) {
                   InputProps={{ ...params.InputProps, disableUnderline: true, }}
                   inputProps={{
                     ...params.inputProps,
-                    style: {color: '#333333', fontWeight: 600, fontSize: '26px'},
+                    style: {color: '#333333', width: '5ch', fontWeight: 600, fontSize: '26px'},
                     autoComplete: 'new-password', // disable autocomplete and autofill
                   }}
                 />
@@ -360,6 +374,10 @@ export default function Pairs(props) {
         onChange={(event, newValue, kind) => {
           console.log("onChange - value_x", newValue, event, kind)
           setValueX(newValue)
+          setAmountX(0)
+          setAmountY(0)
+
+          history.replace(`pairs#${newValue}$${value_y}`)
 
           // TODO(psq): set possible Ys
 
@@ -400,7 +418,7 @@ export default function Pairs(props) {
         renderInput={(params) => {
           // console.log("renderInput", params)
           return (<React.Fragment>
-            <Grid container className={classes.root} spacing={1} alignItems="flex-end">
+            <Grid container  style={{paddingLeft: '10px'}} className={classes.root} spacing={1} alignItems="flex-end">
               <Grid item>
                 {token_y && token_y.metadata ? <img style={{marginBottom: '7px'}} width={'30px'} className="mr-05" src={token_y.metadata.vector}/> : null}
               </Grid>
@@ -410,7 +428,7 @@ export default function Pairs(props) {
                   InputProps={{ ...params.InputProps, disableUnderline: true, }}
                   inputProps={{
                     ...params.inputProps,
-                    style: {color: '#333333', fontWeight: 600, fontSize: '26px'},
+                    style: {color: '#333333', width: '5ch', fontWeight: 600, fontSize: '26px'},
                     autoComplete: 'new-password', // disable autocomplete and autofill
                   }}
                 />
@@ -423,6 +441,10 @@ export default function Pairs(props) {
         onChange={(event, newValue, kind) => {
           console.log("onChange - value_y", newValue, event, kind)
           setValueY(newValue)
+          setAmountX(0)
+          setAmountY(0)
+
+          history.replace(`pairs#${value_x}$${newValue}`)
 
           // TODO(psq): set possible Xs
 
@@ -474,11 +496,21 @@ export default function Pairs(props) {
     await doContractCall(options)  // this does not awaits anything, returns as soon as extenstion windows shows up
   })
 
-  console.log("token_balance", token_balance_x, token_balance_y)
-  const exchange_rate = token_balance_x && token_balance_y ? ((new BigNum(token_balance_y)).toNumber() / (new BigNum(token_balance_x)).toNumber()).toFixed(6) * 10**(token_x.decimals - token_y.decimals) : 0
-  const price_impact = (1 - (parseFloat(amount_y) / (parseFloat(amount_x) * 0.997) / (flipped ? 1 / exchange_rate : exchange_rate))) * 100
+  console.log("token_balance", token_balance_x, token_balance_y, token_balance_x / 10**token_x.decimals, token_balance_y / 10**token_y.decimals)
+  const exchange_rate = pair_balances ?
+   (flipped ?
+     ((new BigNum(pair_balances.balance_x)).toNumber() / (new BigNum(pair_balances.balance_y)).toNumber()) * 10**(token_x.decimals - token_y.decimals)
+     :
+     ((new BigNum(pair_balances.balance_y)).toNumber() / (new BigNum(pair_balances.balance_x)).toNumber()) * 10**(token_x.decimals - token_y.decimals)
+   )
+   :
+   0
+  const price_impact = (1 - (parseFloat(amount_y) / (parseFloat(amount_x) * 0.997) / exchange_rate)) * 100
   const minimum_received = parseFloat(amount_y) * (1 - slippage)
 
+  console.log("exchange_rate", exchange_rate, valid_pair_id)
+  console.log("price_impact", price_impact)
+  console.log("minimum_received", minimum_received)
 // import material-ui autocomplete?  other option
 
   return (
@@ -531,7 +563,7 @@ export default function Pairs(props) {
               id="amount-x"
               className="sp-form-section-value-num"
               type="number"
-              placeholder="0.0"
+              placeholder="0.000000"
               InputProps={{
                 disableUnderline: true,
                 style: {color: '#333333', fontWeight: 600, fontSize: '26px'},
@@ -555,7 +587,8 @@ export default function Pairs(props) {
             id="amount-y"
             className="sp-form-section-value-num"
             type="number"
-            placeholder="0.0"
+            placeholder="0.000000"
+            disabled={true}
             InputProps={{
               disableUnderline: true,
               style: {color: '#333333', fontWeight: 600, fontSize: '26px'},
@@ -570,30 +603,40 @@ export default function Pairs(props) {
           </div>
         </div>
         {
-          amount_x.length > 0 ?
-            <Box>
-              <Tooltip title="Based on the slippage, you'll receive at least this amount, or the transaction will abort">
-                <Box className="f-w4 fs-15 ml-25">
-                  Minimum Received: {minimum_received.toFixed(4)} {token_x.name}
-                </Box>
-              </Tooltip>
-              <Tooltip title="Based on available liquidity, how much will the transaction affect the price1">
-                <Box className="f-w4 fs-15 ml-25">
-                  Price Impact: {isNaN(price_impact) ? null : (price_impact < 0.01 ? '< 0.01%' : `${price_impact.toFixed(2)}%`)}
-                </Box>
-              </Tooltip>
-              <Tooltip title="tThe fee received by Liquidity Providers as an incentive">
-                <Box className="f-w4 fs-15 ml-25">
-                  LP fee: {fee.toFixed(4)} {token_x.name}
-                </Box>
-              </Tooltip>
-              <StyledButton className="sp-form-action mt-20 mb-20 ml-25" onClick={() => { swapTokens(token_x, token_y, amount_x, minimum_received, flipped) }}>
-                Swap
-              </StyledButton>
+          (() => {
+            if (valid_pair && amount_x.length > 0) {
+              return (
+                <Box>
+                  <Tooltip title={<p style={{marginBlockEnd: '0px'}}>Based on the slippage, you'll receive at least this amount, or the transaction will abort</p>}>
+                    <Box className="f-w5 fs-15 ml-25">
+                      Minimum Received: {minimum_received.toFixed(4)} {token_y.name}
+                    </Box>
+                  </Tooltip>
+                  <Tooltip title={<p style={{marginBlockEnd: '0px'}}>Based on available liquidity, how much will the transaction affect the price1</p>}>
+                    <Box style={price_impact > 5 ? {color: 'red'} : null} className="f-w5 fs-15 ml-25">
+                      Price Impact: {isNaN(price_impact) ? null : (price_impact < 0.01 ? '< 0.01%' : `${price_impact.toFixed(2)}%`)}
+                    </Box>
+                  </Tooltip>
+                  <Tooltip title={<p style={{marginBlockEnd: '0px'}}>The fee received by Liquidity Providers as an incentive</p>}>
+                    <Box className="f-w5 fs-15 ml-25">
+                      LP fee: {fee.toFixed(4)} {token_x.name}
+                    </Box>
+                  </Tooltip>
+                  <StyledButton className="sp-form-action mt-20 mb-20 ml-25" onClick={() => { swapTokens(token_x, token_y, amount_x, minimum_received, flipped) }}>
+                    Swap
+                  </StyledButton>
 
-            </Box>
-          :
-            null
+                </Box>
+              )
+            } else if (!valid_pair) {
+              return (
+                <Box className="f-w5 fs-15 ml-25">
+                  No pair available to proceeed with a swap
+                </Box>
+              )
+            } else {
+              return null
+          }})()
         }
         {
           !userData ?

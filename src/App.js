@@ -6,6 +6,8 @@ import { AppConfig, UserSession } from '@stacks/connect'
 import { Connect } from '@stacks/connect-react'
 import { CContainer, CFade } from '@coreui/react'
 
+import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles'
+
 // import './scss/style.scss'
 
 import {
@@ -36,6 +38,17 @@ import {
   pairBalanceFamily,
   pairQuoteFamily,
 } from './atoms'
+
+const theme = createMuiTheme({
+  typography: {
+    fontWeight: 500,
+    fontFamily: [
+      'Dosis',
+      'sans-serif',
+    ].join(','),
+  },
+})
+
 
 const loading = (
   <div className="pt-3 text-center">
@@ -226,11 +239,13 @@ export default function App(props) {
 
   return (
     <div className="App">
-      <Connect authOptions={authOptions}>
-        <Router>
-          <SwaprLayout/>
-        </Router>
-      </Connect>
+      <ThemeProvider theme={theme}>
+        <Connect authOptions={authOptions}>
+          <Router>
+            <SwaprLayout/>
+          </Router>
+        </Connect>
+      </ThemeProvider>
     </div>
   )
 }
