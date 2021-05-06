@@ -377,7 +377,7 @@ export default function Pairs(props) {
           setAmountX(0)
           setAmountY(0)
 
-          history.replace(`pairs#${newValue}$${value_y}`)
+          history.replace(`swap#${newValue}$${value_y}`)
 
           // TODO(psq): set possible Ys
 
@@ -444,7 +444,7 @@ export default function Pairs(props) {
           setAmountX(0)
           setAmountY(0)
 
-          history.replace(`pairs#${value_x}$${newValue}`)
+          history.replace(`swap#${value_x}$${newValue}`)
 
           // TODO(psq): set possible Xs
 
@@ -540,12 +540,14 @@ export default function Pairs(props) {
       //   <p>valid_pair: {valid_pair.toString()}</p>
       //   <p>flipped: {flipped !== null ? flipped.toString() : 'n/a'}</p>
       }
-      <p>flipped: {flipped !== null ? flipped.toString() : 'n/a'}</p>
+      {
+        //<p>flipped: {flipped !== null ? flipped.toString() : 'n/a'}</p>
+      }
 
       <div className="sp-form" id="swapForm" style={{display: 'block'}}>
         <div className="sp-form-tabs">
           <button className="sp-form-tab sp-form-tab--active">Swap</button>
-          <button className="sp-form-tab" id="spPoolTab">Pool</button>
+          <button className="sp-form-tab" id="spPoolTab" onClick={() => { console.log("click"); history.push(value_x && value_y ? `/pool#${value_x}$${value_y}` : `/pool`)}}>Pool</button>
         </div>
         <div className="sp-form-settings">
           <button>
@@ -557,7 +559,15 @@ export default function Pairs(props) {
           // <p>value_x: {JSON.stringify(value_x)}</p>
           // <p>input_value_x: {JSON.stringify(input_value_x)}</p>
           }
-          <div className="sp-form-section-title">From</div>
+          <div className="row">
+            <div className="sp-form-section-title col-5">From</div>
+            {
+              !isNaN(parseFloat(token_balance_x)) ?
+                <div className="sp-form-section-title col-7">Balance: {token_balance_x / 10 ** token_x.decimals}</div>
+              :
+                null
+            }
+          </div>
           <div className="sp-form-section-value">
             <TextField
               id="amount-x"
@@ -581,7 +591,15 @@ export default function Pairs(props) {
           <i className="icon icon-swap"></i>
         </div>
         <div className="sp-form-section">
-          <div className="sp-form-section-title">To</div>
+          <div className="row">
+            <div className="sp-form-section-title col-5">To</div>
+            {
+              !isNaN(parseFloat(token_balance_y)) ?
+                <div className="sp-form-section-title col-7">Balance:  {token_balance_y / 10 ** token_y.decimals}</div>
+              :
+                null
+            }
+          </div>
           <div className="sp-form-section-value">
           <TextField
             id="amount-y"
@@ -605,8 +623,15 @@ export default function Pairs(props) {
         {
           (() => {
             if (valid_pair && amount_x.length > 0) {
+              console.log("check balance", parseFloat(amount_x), (token_balance_x / 10 ** token_x.decimals))
               return (
                 <Box>
+                  <Box className="f-w5 fs-15 ml-25">
+                    Price {1 / exchange_rate} {token_x.name}
+                  </Box>
+                  <StyledButton className="sp-form-action mt-20 mb-20 ml-25" onClick={() => { swapTokens(token_x, token_y, amount_x, minimum_received, flipped) }}>
+                    { parseFloat(amount_x) < (token_balance_x / 10 ** token_x.decimals) ? 'Swap' : `Not enough ${token_x.name}`}
+                  </StyledButton>
                   <Tooltip title={<p style={{marginBlockEnd: '0px'}}>Based on the slippage, you'll receive at least this amount, or the transaction will abort</p>}>
                     <Box className="f-w5 fs-15 ml-25">
                       Minimum Received: {minimum_received.toFixed(4)} {token_y.name}
@@ -622,10 +647,6 @@ export default function Pairs(props) {
                       LP fee: {fee.toFixed(4)} {token_x.name}
                     </Box>
                   </Tooltip>
-                  <StyledButton className="sp-form-action mt-20 mb-20 ml-25" onClick={() => { swapTokens(token_x, token_y, amount_x, minimum_received, flipped) }}>
-                    Swap
-                  </StyledButton>
-
                 </Box>
               )
             } else if (!valid_pair) {

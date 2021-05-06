@@ -1,10 +1,31 @@
 TODOs
 
-- swap
-- port new html for main functionality (poo/swap, and will need posisbly more designs)
-- change swapr to use purple boat instead of text logo?
+- swap: show balances
+- swap: show insufficient balance
+- swap: show price
+
+- switch betwen swap and pool
+
 - provide liquidity
+	- balance x
+	- balance y
+	- add x, calc y
+	- add y, calc x
+	- additional share of pool %, total share pool %
+	- current pool share %
+	- current pool share x
+	- current pool share y
 - removeliquidity
+	- current pool share %
+	- current pool share x
+	- current pool share y
+	- received x
+	- received y
+- show pools with LP
+
+- deploy ui for public access
+
+- change swapr to use purple boat instead of text logo?
 
 - record twap?
 
@@ -38,3 +59,5 @@ DONE
 + refactor swapr to use sip-10 trait instead
 + reafctor pair tokens to be sip-10 compliants
 + deploy on mocknet
++ swap
++ port new html for main functionality (poo/swap, and will need posisbly more designs)
